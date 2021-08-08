@@ -26,12 +26,10 @@ jobs:
     # No tests of value yet, so don't bother spinning them up
     # - run: npm test
 
-    # Now let's have some fun. Whomp the main repo and push to gh-pages branch
-    - run: git branch -d gh-pages || echo "Branch not there, continue"
-    - run: git checkout -b gh-pages
+    # Now let's throw it at gh-pages. 
     - name: Deploy
       run: |
-        git config --global user.name Github Actions
+        git config --global user.name "Github Actions"
         git config --global user.email chris@cpprograms.net
         git remote set-url origin https://${github_token@github.com/${repository}
         gh-pages -d build
