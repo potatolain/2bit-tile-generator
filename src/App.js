@@ -5,6 +5,8 @@ import SlSelect from '@shoelace-style/react/dist/select';
 import SlMenuItem from '@shoelace-style/react/dist/menu-item';
 import SlRange from '@shoelace-style/react/dist/range';
 import SlTooltip from '@shoelace-style/react/dist/tooltip';
+import SlRadio from '@shoelace-style/react/dist/radio';
+import SlRadioGroup from '@shoelace-style/react/dist/radio-group';
 
 import Jimp from 'jimp/es';
 
@@ -27,7 +29,7 @@ const AVAILABLE_TILE_TYPES = [
   // Unimplemented tile types (so far!) 
   // 'lava', 
   // 'rock', 
-  // 'brick wall', 
+  'brick wall', 
   // 'hole', 
   // 'plant'
 ];
@@ -36,7 +38,7 @@ const TILE_BACKGROUND_COLORS = {
   water: 2,
   lava: 3,
   rock: 3, 
-  'brick wall': 3,
+  'brick wall': 2,
   hole: 0,
   plant: 3
 };
@@ -51,11 +53,15 @@ const TILE_OPTIONS = {
     {name: 'Lines', min: 2, max: 4, type: 'range'},
     // Couldn't quite get what I wanted out of this - the areas kind of need to be relative to the lines, and 
     // that's a bit more complex than I'd hoped.
-    {name: 'Deeper areas', min: 0, max: 3, type: 'range', disabled: true, defaultValue: 0}
+    {name: 'Deeper Areas', min: 0, max: 3, type: 'range', disabled: true, defaultValue: 0}
   ],
   lava: [],
   rock: [],
-  'brick wall': [],
+  'brick wall': [
+    {name: 'Brick Width', min: 5, max: 12, type: 'range'},
+    {name: 'Brick Height', min: 2, max: 12, type: 'range'},
+    {name: 'Brick Color', type: 'palette', defaultValue: 2}
+  ],
   hole: [],
   plant: []
 }
@@ -70,7 +76,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tileType: 'grass',
+      tileType: 'brick wall',
       tileProps: {},
       palette: [0x000000ff, 0x444444ff, 0xaaaaaaff, 0xffffffff],
       imageWidth: 16,
@@ -83,7 +89,7 @@ class App extends React.Component {
       TILE_OPTIONS[t].forEach(opt => {
         if (opt.defaultValue !== undefined) {
           this.state.tileProps[t][opt.name] = opt.defaultValue;
-        } else {
+        } else if (opt.min !== undefined && opt.max !== undefined) {
           this.state.tileProps[t][opt.name] = Math.floor(Math.random() * (opt.max - opt.min)) + opt.min;
         }
       });
@@ -97,20 +103,18 @@ class App extends React.Component {
   reRandomize() {
     let newState = {tileProps: {...this.state.tileProps}};
     AVAILABLE_TILE_TYPES.forEach(t => {
-      newState.tileProps[t] = {};
+      newState.tileProps[t] = {...this.state.tileProps[t]};
       TILE_OPTIONS[t].forEach(opt => {
         if (!opt.disabled) {
-          newState.tileProps[t][opt.name] = Math.floor(Math.random() * (opt.max - opt.min)) + opt.min;
+          if (opt.min !== undefined && opt.max !== undefined) {
+            newState.tileProps[t][opt.name] = Math.floor(Math.random() * (opt.max - opt.min)) + opt.min;
+          }
         }
       });
     });
     this.setState(newState);
     this.reloadImage();
   };
-
-  download() {
-    const url = this.state.currentTileImg.replace('data:image')
-  }
 
   getRandomImageCoords() {
     let x = Math.floor(Math.random() * this.state.imageWidth);
@@ -140,6 +144,23 @@ class App extends React.Component {
                 <small className="right">{setting.max}</small>
               </div>
             </div>;
+        case 'palette':
+          return <div className="tile-option" key={"palette-" + setting.type + setting.name}>
+            <SlRadioGroup label={setting.name}>
+              {[0, 1, 2, 3].map(n => {
+                return <SlRadio 
+                    value={n} 
+                    checked={this.state.tileProps[type][setting.name] === n ? true : false} 
+                    key={"palette-color" + setting.type + setting.name + '-' + n} 
+                    onSlChange={e => e.target.checked ? this.updateTileState(type, setting.name, n) : null}
+                  >
+                    Color {n+1} 
+                    {/* This should really be a component */}
+                    <div className="palette-preview" style={{backgroundColor: '#' + this.state.palette[n].toString(16).padStart(8, '0')}}></div>
+                  </SlRadio>
+              })}
+            </SlRadioGroup>
+          </div>
         default:
           console.error(`Unknown tile option type "${setting.type}" found!`, setting);
           return <span></span>;
@@ -175,7 +196,7 @@ class App extends React.Component {
             }
 
           case 'water':
-            for (let i = 0; i < tileOpt['Deeper areas']; i++) {
+            for (let i = 0; i < tileOpt['Deeper Areas']; i++) {
               const {x: originX, y: originY} = this.getRandomImageCoords();
               const depthR = Math.floor(Math.random() * 4) + 3;
 
@@ -208,6 +229,48 @@ class App extends React.Component {
               image.setPixelColor(this.state.palette[3], x, y);
             }
             break;
+          case 'brick wall':
+            // Where should the first brick appear? We might want to ranomize 1/both of these
+            const originX = 0, originY = 0;
+            const row1Lines = [];
+            const row2Lines = [];
+            for (var i = 0; i < image.bitmap.width; i++) {
+              if (modulus(i+1, tileOpt['Brick Width'] + 1) === 0) {
+                row1Lines.push(i);
+              } else if (modulus(i + 1 + Math.floor(tileOpt['Brick Width'] / 2), tileOpt['Brick Width'] + 1) === 0) {
+                row2Lines.push(i);
+              }
+            }
+
+            // Fill with bg color to start
+            let rowNum = 0;
+            image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
+              image.setPixelColor(this.state.palette[tileOpt['Brick Color']], x, y);
+
+              if (y % (tileOpt['Brick Height'] + 1) === 0/* && y !== (image.bitmap.height - 1)*/) {
+                image.setPixelColor(this.state.palette[0], x, y);
+                if (x === 0) { ++rowNum; }
+              }
+
+              if (rowNum % 2 === 0) {
+                if (row1Lines.indexOf(x) !== -1) {
+                  image.setPixelColor(this.state.palette[0], x, y);
+                }
+              } else {
+                if (row2Lines.indexOf(x) !== -1) {
+                  image.setPixelColor(this.state.palette[0], x, y);
+                }
+              }
+            });
+
+            // Line for first set of bricks
+            // for (let i = 0; i < image.bitmap.height; i += tileOpt['Brick Height'] + 1) {
+            //  image.scan(0, i, image.bitmap.width, 1, (x, y) => image.setPixelColor(this.state.palette[0], x, y));
+            // }
+            // Fill the very bottom line with bg, even if it would normally be border. Make it look a little less sketch
+            // image.scan(0, image.bitmap.height-1, image.bitmap.width, 1, (x, y) => image.setPixelColor(this.state.palette[tileOpt['Brick Color']], x, y));
+
+            break;
           default: 
             console.warn('Unimplemented tile type given!', this.state.tileType, 'blank image ahoy');
         }
@@ -229,6 +292,10 @@ class App extends React.Component {
   }
 
   updateTileState(typeName, name, value) {
+    // Test to make sure the value changed to avoid infinite loops from radio buttons triggering this repeatedly
+    if (this.state.tileProps[typeName][name] === value) { 
+      return;
+    }
     this.setState({
       tileProps: {
         ...this.state.tileProps,
