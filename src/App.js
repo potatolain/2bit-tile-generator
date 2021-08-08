@@ -4,12 +4,14 @@ import SlButton from '@shoelace-style/react/dist/button';
 import SlSelect from '@shoelace-style/react/dist/select';
 import SlMenuItem from '@shoelace-style/react/dist/menu-item';
 import SlRange from '@shoelace-style/react/dist/range';
+import SlTooltip from '@shoelace-style/react/dist/tooltip';
 
 import Jimp from 'jimp/es';
 
 /**
  * ADVANCED THINGS TO PLAY WITH
  * Weighted random, to make tiles look nicer: https://redstapler.co/javascript-weighted-random/ -- option 2 looks nice
+ * For grass it'd be nice to limit to fewer lines and blades, and more triangles, for example
  * 
  * 
  * GENERAL TODO:
@@ -19,14 +21,26 @@ import Jimp from 'jimp/es';
 import './App.css';
 import React from 'react';
 
-const AVAILABLE_TILE_TYPES = ['grass', 'water', 'lava', 'rock', 'brick wall'];
+const AVAILABLE_TILE_TYPES = [
+  'grass', 
+  'water', 
+  // Unimplemented tile types (so far!) 
+  // 'lava', 
+  // 'rock', 
+  // 'brick wall', 
+  // 'hole', 
+  // 'plant'
+];
 const TILE_BACKGROUND_COLORS = {
   grass: 3,
   water: 2,
   lava: 3,
   rock: 3, 
-  'brick wall': 3
-}
+  'brick wall': 3,
+  hole: 0,
+  plant: 3
+};
+
 const TILE_OPTIONS = {
   grass: [
     {name: 'Short Blades', min: 0, max: 10, type: 'range'},
@@ -35,11 +49,15 @@ const TILE_OPTIONS = {
   ],
   water: [
     {name: 'Lines', min: 2, max: 4, type: 'range'},
+    // Couldn't quite get what I wanted out of this - the areas kind of need to be relative to the lines, and 
+    // that's a bit more complex than I'd hoped.
     {name: 'Deeper areas', min: 0, max: 3, type: 'range', disabled: true, defaultValue: 0}
   ],
   lava: [],
   rock: [],
-  'brick wall': []
+  'brick wall': [],
+  hole: [],
+  plant: []
 }
 
 // Because js treats % as a remainder instead of modulus... because, sigh, programming languages were a mistake.
@@ -103,7 +121,7 @@ class App extends React.Component {
 
   getTileOptions(type) {
     return TILE_OPTIONS[type].map(setting => {
-      if (setting.disabled) { return <span></span>; }
+      if (setting.disabled) { return <span key={"disabled-setting-" + setting.type + setting.name}></span>; }
       switch (setting.type) {
         case 'range':
           // This could probably be a component of its
@@ -234,8 +252,12 @@ class App extends React.Component {
           </p>
 
           <div className="control-bar">
-            <SlButton onClick={() => this.reRandomize()}>Randomize Settings</SlButton>
-            <SlButton onClick={() => this.reloadImage()}>Regenerate</SlButton>
+            <SlTooltip content="Randomize the settings for all tiles.">
+              <SlButton onClick={() => this.reRandomize()}>Randomize Settings</SlButton>
+            </SlTooltip>
+            <SlTooltip content="Regenerate tile image with the current settings">
+              <SlButton onClick={() => this.reloadImage()}>Regenerate</SlButton>
+            </SlTooltip>
           </div>
 
           <div className="configurator">

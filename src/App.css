@@ -1,5 +1,5 @@
 :root {
-  --border-color: #ddd
+  --border-color: var(--sl-color-gray-300)
 }
 
 .App header {
@@ -30,6 +30,7 @@
   border-radius: 10px;
   margin: 0 10px;
   padding: 10px;
+  background-color: #fff;
 }
 
 .App .configurator h3, .App .configurator h4 {
