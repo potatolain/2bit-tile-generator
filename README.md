@@ -28,6 +28,9 @@ You probably won't need to do this unless you're forking this! The deploy proces
 
 Run this command: `npm run build`
 
+You can test the result with a server by doing `http-server ./build`. (http-server is a node module, install 
+it globally)
+
 ## Contributing
 
 In short, submit a PR! This is a pretty small proejct, but I'll try to stay on top of it. If you've got something
