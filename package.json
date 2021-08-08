@@ -2,6 +2,7 @@
   "name": "2bit-tile-generator",
   "version": "1.0.0",
   "description": "Generates 2-bit colored tiles for retro and retro-themed games",
+  "homepage": "https://cppchriscpp.github.io/2bit-tile-generator",
   "private": false,
   "dependencies": {
     "@shoelace-style/react": "^2.0.0-beta.47",
