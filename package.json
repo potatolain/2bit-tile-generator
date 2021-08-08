@@ -1,0 +1,42 @@
+{
+  "name": "2bit-tile-generator",
+  "version": "1.0.0",
+  "description": "Generates 2-bit colored tiles for retro and retro-themed games",
+  "private": false,
+  "dependencies": {
+    "@shoelace-style/react": "^2.0.0-beta.47",
+    "@shoelace-style/shoelace": "^2.0.0-beta.47",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "jimp": "^0.16.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.1.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "echo \"No tests, this is a toy\"",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
