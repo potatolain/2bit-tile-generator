@@ -1,6 +1,11 @@
 # What is this?
 
-This is a quick-and-dirty react app put together to generate some simple tiles for retro-styled games.
+This is a quick-and-dirty react app put together to generate some simple tiles for retro-styled games. I honestly
+didn't follow a lot of best practices here, and didn't do much of any code separation. (At least not yet). The main
+goal was to get something working, not to make something for others to extend. (Though you're of course welcome to!)
+
+If I find more time and/or this finds more interest I'll spend time refactoring to make this more friendly to web
+developers.
 
 It directly targets the Nintendo gameboy, but can be easily adapted to work with the NES, or likely many
 other consoles. 
