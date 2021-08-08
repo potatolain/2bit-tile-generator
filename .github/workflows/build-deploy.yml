@@ -31,7 +31,7 @@ jobs:
       run: |
         git config --global user.name "Github Actions"
         git config --global user.email chris@cpprograms.net
-        git remote set-url origin https://${github_token}@github.com/${repository}
+        git remote set-url origin https://git:${github_token}@github.com/${repository}.git
         gh-pages -d build
       env:
         repository: ${{ github.repository }}
