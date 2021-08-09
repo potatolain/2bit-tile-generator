@@ -28,6 +28,7 @@ import Jimp from 'jimp/es';
 
 import './App.css';
 import React from 'react';
+import PalettePreview from './components/palette-preview';
 
 const AVAILABLE_TILE_TYPES = [
   'grass', 
@@ -178,8 +179,7 @@ class App extends React.Component {
                     onSlChange={e => e.target.checked ? this.updateTileState(type, setting.name, n) : null}
                   >
                     Color {n+1} 
-                    {/* This should really be a component */}
-                    <div className="palette-preview" style={{backgroundColor: '#' + this.state.palette[n].toString(16).padStart(8, '0')}}></div>
+                    <PalettePreview palette={this.state.palette[n].toString(16).padStart(8, '0')}></PalettePreview>
                   </SlRadio>
               })}
             </SlRadioGroup>
@@ -366,7 +366,6 @@ class App extends React.Component {
               <h3>Tile Preview</h3>
 
               <h4>Single</h4>
-              {/* <div style={{width: '128px', height: '128px', border: '1px solid #000', margin: 'auto'}}></div>*/}
               <img className="tile-preview" alt="Tile Preview" src={this.state.currentTileImg}></img>
               <h4>Tiled</h4>
               <div className="tile-preview-collection">
