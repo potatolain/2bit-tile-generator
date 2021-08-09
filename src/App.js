@@ -18,6 +18,12 @@ import Jimp from 'jimp/es';
  * 
  * GENERAL TODO:
  * - Implement everything that's not grass
+ * - Add more palettes (steal from the sprite generator? Try defaults built into nesst? Other?)
+ * - Allow palette swapping?
+ * - Pretty the codebase up so an employer wouldn't look at this and decide I have no idea what I'm doing (⩾﹏⩽)
+ * 
+ * BUGS: 
+ * - Random seems to never give the max value - did I mess something up?
  */
 
 import './App.css';
@@ -28,9 +34,10 @@ const AVAILABLE_TILE_TYPES = [
   'water', 
   // Unimplemented tile types (so far!) 
   // 'lava', 
+  'block',
   // 'rock', 
-  'brick wall', 
-  // 'hole', 
+  'brick', 
+  // 'hole',
   // 'plant'
 ];
 const TILE_BACKGROUND_COLORS = {
@@ -38,10 +45,22 @@ const TILE_BACKGROUND_COLORS = {
   water: 2,
   lava: 3,
   rock: 3, 
-  'brick wall': 2,
+  brick: 2,
   hole: 0,
-  plant: 3
+  plant: 3,
+  block: 3
 };
+
+const TILE_NAMES = {
+  grass: 'Grass',
+  water: 'Water',
+  lava: 'Lava',
+  block: 'Block / Tile',
+  brick: 'Brick Wall',
+  rock: 'Rock',
+  hole: 'Hole / Gap',
+  plant: 'Bush',
+}
 
 const TILE_OPTIONS = {
   grass: [
@@ -57,10 +76,14 @@ const TILE_OPTIONS = {
   ],
   lava: [],
   rock: [],
-  'brick wall': [
+  brick: [
     {name: 'Brick Width', min: 5, max: 12, type: 'range'},
     {name: 'Brick Height', min: 2, max: 12, type: 'range'},
     {name: 'Brick Color', type: 'palette', defaultValue: 2}
+  ],
+  block: [
+    // {name: 'Color', type: 'palette', defaultValue: 2}
+    {name: 'Height', min: 2, max: 8, type: 'range'}
   ],
   hole: [],
   plant: []
@@ -76,7 +99,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tileType: 'brick wall',
+      tileType: 'water',
       tileProps: {},
       palette: [0x000000ff, 0x444444ff, 0xaaaaaaff, 0xffffffff],
       imageWidth: 16,
@@ -229,9 +252,7 @@ class App extends React.Component {
               image.setPixelColor(this.state.palette[3], x, y);
             }
             break;
-          case 'brick wall':
-            // Where should the first brick appear? We might want to ranomize 1/both of these
-            const originX = 0, originY = 0;
+          case 'brick':
             const row1Lines = [];
             const row2Lines = [];
             for (var i = 0; i < image.bitmap.width; i++) {
@@ -247,7 +268,7 @@ class App extends React.Component {
             image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
               image.setPixelColor(this.state.palette[tileOpt['Brick Color']], x, y);
 
-              if (y % (tileOpt['Brick Height'] + 1) === 0/* && y !== (image.bitmap.height - 1)*/) {
+              if (y % (tileOpt['Brick Height'] + 1) === 0) {
                 image.setPixelColor(this.state.palette[0], x, y);
                 if (x === 0) { ++rowNum; }
               }
@@ -262,14 +283,27 @@ class App extends React.Component {
                 }
               }
             });
+            break;
+          case 'block':
+            image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+              const tileSize = (10 - tileOpt['Height']) * 2;
 
-            // Line for first set of bricks
-            // for (let i = 0; i < image.bitmap.height; i += tileOpt['Brick Height'] + 1) {
-            //  image.scan(0, i, image.bitmap.width, 1, (x, y) => image.setPixelColor(this.state.palette[0], x, y));
-            // }
-            // Fill the very bottom line with bg, even if it would normally be border. Make it look a little less sketch
-            // image.scan(0, image.bitmap.height-1, image.bitmap.width, 1, (x, y) => image.setPixelColor(this.state.palette[tileOpt['Brick Color']], x, y));
+              image.setPixelColor(x > (image.bitmap.height - y - 1) ? this.state.palette[1] : this.state.palette[3], x, y);
 
+              
+              if (x === y) {
+                image.setPixelColor(this.state.palette[2], x, y);
+              } else if (x == (image.bitmap.height - y - 1)) {
+                image.setPixelColor(this.state.palette[1], x, y);
+              }
+              const h = ((image.bitmap.height / 2) - (tileSize / 2));
+              
+              if (x > h && x < (h + tileSize - 1)) {
+                if (y > h && y < (h + tileSize - 1)) {
+                  image.setPixelColor(this.state.palette[2], x, y);
+                }
+              }
+            });
             break;
           default: 
             console.warn('Unimplemented tile type given!', this.state.tileType, 'blank image ahoy');
@@ -346,7 +380,7 @@ class App extends React.Component {
               <h3>Tile Configuration</h3>
               <div className = "tile-option">
                 <SlSelect label="Tile Type" value={this.state.tileType} onSlChange={e => this.updateTileType(e)}>
-                  {AVAILABLE_TILE_TYPES.map(a => <SlMenuItem key={a} value={a}>{a}</SlMenuItem>)}
+                  {AVAILABLE_TILE_TYPES.map(a => <SlMenuItem key={a} value={a}>{TILE_NAMES[a]}</SlMenuItem>)}
                 </SlSelect>
               </div>
 
