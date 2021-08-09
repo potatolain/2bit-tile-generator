@@ -100,7 +100,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tileType: 'water',
+      tileType: 'brick',
       tileProps: {},
       palette: [0x000000ff, 0x444444ff, 0xaaaaaaff, 0xffffffff],
       imageWidth: 16,
