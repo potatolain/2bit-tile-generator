@@ -95,8 +95,10 @@ function modulus(a, b) {
   return ((a % b ) + b) % b;
 }
 
+// Huge app component that could probably be broken down well if I got smart with a Store for state
 class App extends React.Component {
 
+  // Initializer, mostly sets up initial state of the application
   constructor(props) {
     super(props);
     this.state = {
@@ -108,6 +110,8 @@ class App extends React.Component {
       // Transparent 1px gif so we don't show a broken image
       currentTileImg: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
     }
+
+    // NOTE: This logic is almost-duplicated in the reRandomize method
     AVAILABLE_TILE_TYPES.forEach(t => {
       this.state.tileProps[t] = {};
       TILE_OPTIONS[t].forEach(opt => {
@@ -120,10 +124,12 @@ class App extends React.Component {
     });
   }
 
+  // Generate the image as soon as this is rendered (else we'll call setState too early)
   componentDidMount() {
     this.reloadImage();
   }
 
+  // NOTE: This logic is almost-duplicated in the constructor, with defaults and without the disabled check.
   reRandomize() {
     let newState = {tileProps: {...this.state.tileProps}};
     AVAILABLE_TILE_TYPES.forEach(t => {
@@ -140,6 +146,7 @@ class App extends React.Component {
     this.reloadImage();
   };
 
+  // Helper to find a random position within the image
   getRandomImageCoords() {
     let x = Math.floor(Math.random() * this.state.imageWidth);
     let y = Math.floor(Math.random() * this.state.imageHeight);
@@ -147,6 +154,8 @@ class App extends React.Component {
     return {x, y};
   }
 
+  // Kind of big method that pops out components for each of the tile options we have available.
+  // This might be a good candidate for the type of thing to break out/apart
   getTileOptions(type) {
     return TILE_OPTIONS[type].map(setting => {
       if (setting.disabled) { return <span key={"disabled-setting-" + setting.type + setting.name}></span>; }
@@ -191,13 +200,17 @@ class App extends React.Component {
     });
   }
 
+  // Use jimp to redraw the image based on current state. This could probably live in a service that
+  // updates the store. I'd make it a component, but the image needs to remain the same in all places.
   getCurrentTileImage() {
-    // Jimp isn't super promise friendly - technically it works but it's pretty sketchy at times. Wrap.
+
+    // Jimp isn't super promise friendly - technically it works but it's pretty sketchy at times. Wrap this instead.
     return new Promise((resolve, reject) =>{
       new Jimp(16, 16, this.state.palette[TILE_BACKGROUND_COLORS[this.state.tileType]], (err, image) =>{
         if (err) { reject(err); }
 
         const tileOpt = this.state.tileProps[this.state.tileType];
+        // Big, kind of ugly switch statement for each of our available tile types, determining how to draw each one.
         switch (this.state.tileType) {
           case 'grass': 
             for (let i = 0; i < tileOpt['Short Blades']; i++) {
@@ -316,20 +329,25 @@ class App extends React.Component {
     });
   }
 
+  // Rebuild the image shown on the page from available settings.
   async reloadImage() {
     this.setState({currentTileImg: await this.getCurrentTileImage()});
   }
 
+  // Helper function to do exactly what it says. Regenerates the image too.
   updateTileType(event) {
     this.setState({tileType: event.target.value});
     this.reloadImage();
   }
 
+  // Helper to update state values from the various "components" (things that should be components) that we support.
   updateTileState(typeName, name, value) {
     // Test to make sure the value changed to avoid infinite loops from radio buttons triggering this repeatedly
     if (this.state.tileProps[typeName][name] === value) { 
       return;
     }
+
+    // React will stomp any nested objects when you use this, so we have to bring in the old state
     this.setState({
       tileProps: {
         ...this.state.tileProps,
@@ -342,6 +360,7 @@ class App extends React.Component {
     this.reloadImage();
   }
 
+
   render() {
     return (
       <div className="App">
@@ -352,6 +371,7 @@ class App extends React.Component {
           <p>
           </p>
 
+          {/* This could probably be a component */}
           <div className="control-bar">
             <SlTooltip content="Randomize the settings for all tiles.">
               <SlButton onClick={() => this.reRandomize()}>Randomize Settings</SlButton>
@@ -368,6 +388,7 @@ class App extends React.Component {
               <h4>Single</h4>
               <img className="tile-preview" alt="Tile Preview" src={this.state.currentTileImg}></img>
               <h4>Tiled</h4>
+              {/* This could also probably be a component */}
               <div className="tile-preview-collection">
                 {[...Array(9).keys()].map(a => <img alt={"tile" + a} src={this.state.currentTileImg} key={"preview-" + a}></img>)}
               </div>
