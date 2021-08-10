@@ -1,5 +1,7 @@
-import '@shoelace-style/shoelace/dist/themes/base.css';
+import React from 'react';
 
+// Shoelace components
+import '@shoelace-style/shoelace/dist/themes/base.css';
 import SlButton from '@shoelace-style/react/dist/button';
 import SlSelect from '@shoelace-style/react/dist/select';
 import SlMenuItem from '@shoelace-style/react/dist/menu-item';
@@ -8,7 +10,14 @@ import SlTooltip from '@shoelace-style/react/dist/tooltip';
 import SlRadio from '@shoelace-style/react/dist/radio';
 import SlRadioGroup from '@shoelace-style/react/dist/radio-group';
 
-import Jimp from 'jimp/es';
+// Services
+import ImageGenerator from './services/image-generator';
+
+// Custom components
+import PalettePreview from './components/palette-preview';
+
+// Constants
+import { TILE_NAMES, TILE_OPTIONS, TILE_BACKGROUND_COLORS, AVAILABLE_TILE_TYPES } from './tile-contants';
 
 /**
  * ADVANCED THINGS TO PLAY WITH
@@ -31,74 +40,6 @@ import Jimp from 'jimp/es';
  */
 
 import './App.css';
-import React from 'react';
-import PalettePreview from './components/palette-preview';
-
-const AVAILABLE_TILE_TYPES = [
-  'grass', 
-  'water', 
-  // Unimplemented tile types (so far!) 
-  // 'lava', 
-  'block',
-  // 'rock', 
-  'brick', 
-  // 'hole',
-  // 'plant'
-];
-const TILE_BACKGROUND_COLORS = {
-  grass: 3,
-  water: 2,
-  lava: 3,
-  rock: 3, 
-  brick: 2,
-  hole: 0,
-  plant: 3,
-  block: 3
-};
-
-const TILE_NAMES = {
-  grass: 'Grass',
-  water: 'Water',
-  lava: 'Lava',
-  block: 'Block / Tile',
-  brick: 'Brick Wall',
-  rock: 'Rock',
-  hole: 'Hole / Gap',
-  plant: 'Bush',
-}
-
-const TILE_OPTIONS = {
-  grass: [
-    {name: 'Short Blades', min: 0, max: 10, type: 'range'},
-    {name: 'Tall Blades', min: 0, max: 10, type: 'range'},
-    {name: 'Triangles', min: 0, max: 8, type: 'range'}
-  ],
-  water: [
-    {name: 'Lines', min: 2, max: 4, type: 'range'},
-    // Couldn't quite get what I wanted out of this - the areas kind of need to be relative to the lines, and 
-    // that's a bit more complex than I'd hoped.
-    {name: 'Deeper Areas', min: 0, max: 3, type: 'range', disabled: true, defaultValue: 0}
-  ],
-  lava: [],
-  rock: [],
-  brick: [
-    {name: 'Brick Width', min: 5, max: 12, type: 'range'},
-    {name: 'Brick Height', min: 2, max: 12, type: 'range'},
-    {name: 'Brick Color', type: 'palette', defaultValue: 2}
-  ],
-  block: [
-    // {name: 'Color', type: 'palette', defaultValue: 2}
-    {name: 'Height', min: 2, max: 8, type: 'range'}
-  ],
-  hole: [],
-  plant: []
-}
-
-// Because js treats % as a remainder instead of modulus... because, sigh, programming languages were a mistake.
-function modulus(a, b) {
-  return ((a % b ) + b) % b;
-}
-
 // Huge app component that could probably be broken down well if I got smart with a Store for state
 class App extends React.Component {
 
@@ -146,17 +87,8 @@ class App extends React.Component {
         }
       });
     });
-    this.setState(newState);
-    this.reloadImage();
+    this.setState(newState, this.reloadImage);
   };
-
-  // Helper to find a random position within the image
-  getRandomImageCoords() {
-    let x = Math.floor(Math.random() * this.state.imageWidth);
-    let y = Math.floor(Math.random() * this.state.imageHeight);
-
-    return {x, y};
-  }
 
   // Kind of big method that pops out components for each of the tile options we have available.
   // This might be a good candidate for the type of thing to break out/apart
@@ -206,131 +138,8 @@ class App extends React.Component {
 
   // Use jimp to redraw the image based on current state. This could probably live in a service that
   // updates the store. I'd make it a component, but the image needs to remain the same in all places.
-  getCurrentTileImage() {
-
-    // Jimp isn't super promise friendly - technically it works but it's pretty sketchy at times. Wrap this instead.
-    return new Promise((resolve, reject) =>{
-      new Jimp(16, 16, this.state.palette[TILE_BACKGROUND_COLORS[this.state.tileType]], (err, image) =>{
-        if (err) { reject(err); }
-
-        const tileOpt = this.state.tileProps[this.state.tileType];
-        // Big, kind of ugly switch statement for each of our available tile types, determining how to draw each one.
-        switch (this.state.tileType) {
-          case 'grass': 
-            for (let i = 0; i < tileOpt['Short Blades']; i++) {
-              const {x, y} = this.getRandomImageCoords();
-              image.setPixelColor(this.state.palette[2], x, y);
-            }
-            for (let i = 0; i < tileOpt['Tall Blades']; i++) {
-              const {x, y} = this.getRandomImageCoords();
-              image.setPixelColor(this.state.palette[2], x, y);
-              image.setPixelColor(this.state.palette[2], x, y === 0 ? (this.state.imageHeight - 1) : y-1);
-            }
-
-            for (let i = 0; i < tileOpt['Triangles']; i++) {
-              const {x, y} = this.getRandomImageCoords();
-
-              image.setPixelColor(this.state.palette[2], x > 0 ? x-1 : (this.state.imageWidth - 1), y);
-              image.setPixelColor(this.state.palette[2], x < (this.state.imageWidth - 1) ? x+1 : 0, y);
-              image.setPixelColor(this.state.palette[2], x, y > 0 ? y-1 : (this.state.imageHeight - 1));
-            }
-
-          case 'water':
-            for (let i = 0; i < tileOpt['Deeper Areas']; i++) {
-              const {x: originX, y: originY} = this.getRandomImageCoords();
-              const depthR = Math.floor(Math.random() * 4) + 3;
-
-              image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
-                const dx = originX - x;
-                const dy = originY - y;
-                if (dx*dx + dy*dy <= (depthR*depthR)) {
-                  image.setPixelColor(this.state.palette[1], x, y);
-                }
-              });
-            }
-            for (let i = 0; i < tileOpt['Lines']; i++) {
-              const {x: originX, y: originY} = this.getRandomImageCoords();
-              const xDiff = Math.floor(Math.random() * 2) === 1 ? 1 : -1;
-              const yDiff = Math.floor(Math.random() * 2) === 1 ? 1 : -1;
-              let x = originX, y = originY;
-              image.setPixelColor(this.state.palette[3], x, y);
-              x = modulus(x + xDiff, this.state.imageWidth);
-              y = modulus(y + yDiff, this.state.imageHeight);
-              while (x != originX && y != originY) {
-                image.setPixelColor(this.state.palette[3], x, y);
-                if (Math.random() > 0.3) {
-                  x = modulus(x + xDiff, this.state.imageWidth);
-                }
-                if (Math.random() > 0.3) {
-                  y = modulus(y + yDiff, this.state.imageHeight);
-                }
-
-              }
-              image.setPixelColor(this.state.palette[3], x, y);
-            }
-            break;
-          case 'brick':
-            const row1Lines = [];
-            const row2Lines = [];
-            for (var i = 0; i < image.bitmap.width; i++) {
-              if (modulus(i+1, tileOpt['Brick Width'] + 1) === 0) {
-                row1Lines.push(i);
-              } else if (modulus(i + 1 + Math.floor(tileOpt['Brick Width'] / 2), tileOpt['Brick Width'] + 1) === 0) {
-                row2Lines.push(i);
-              }
-            }
-
-            // Fill with bg color to start
-            let rowNum = 0;
-            image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
-              image.setPixelColor(this.state.palette[tileOpt['Brick Color']], x, y);
-
-              if (y % (tileOpt['Brick Height'] + 1) === 0) {
-                image.setPixelColor(this.state.palette[0], x, y);
-                if (x === 0) { ++rowNum; }
-              }
-
-              if (rowNum % 2 === 0) {
-                if (row1Lines.indexOf(x) !== -1) {
-                  image.setPixelColor(this.state.palette[0], x, y);
-                }
-              } else {
-                if (row2Lines.indexOf(x) !== -1) {
-                  image.setPixelColor(this.state.palette[0], x, y);
-                }
-              }
-            });
-            break;
-          case 'block':
-            image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
-              const tileSize = (10 - tileOpt['Height']) * 2;
-
-              image.setPixelColor(x > (image.bitmap.height - y - 1) ? this.state.palette[1] : this.state.palette[3], x, y);
-
-              
-              if (x === y) {
-                image.setPixelColor(this.state.palette[2], x, y);
-              } else if (x == (image.bitmap.height - y - 1)) {
-                image.setPixelColor(this.state.palette[1], x, y);
-              }
-              const h = ((image.bitmap.height / 2) - (tileSize / 2));
-              
-              if (x > h && x < (h + tileSize - 1)) {
-                if (y > h && y < (h + tileSize - 1)) {
-                  image.setPixelColor(this.state.palette[2], x, y);
-                }
-              }
-            });
-            break;
-          default: 
-            console.warn('Unimplemented tile type given!', this.state.tileType, 'blank image ahoy');
-        }
-
-        image.getBase64Async('image/png').then(resolve, reject);
-      });
-
-
-    });
+  async getCurrentTileImage() {
+    return await ImageGenerator.generateImage(this.state.tileType, this.state.tileProps[this.state.tileType], this.state.palette);
   }
 
   // Rebuild the image shown on the page from available settings.
@@ -340,8 +149,7 @@ class App extends React.Component {
 
   // Helper function to do exactly what it says. Regenerates the image too.
   updateTileType(event) {
-    this.setState({tileType: event.target.value});
-    this.reloadImage();
+    this.setState({tileType: event.target.value}, this.reloadImage);
   }
 
   // Helper to update state values from the various "components" (things that should be components) that we support.
@@ -360,8 +168,7 @@ class App extends React.Component {
           [name]: value
         }
       }
-    });
-    this.reloadImage();
+    }, this.reloadImage);
   }
 
 
