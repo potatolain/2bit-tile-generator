@@ -21,6 +21,10 @@ import Jimp from 'jimp/es';
  * - Add more palettes (steal from the sprite generator? Try defaults built into nesst? Other?)
  * - Allow palette swapping?
  * - Pretty the codebase up so an employer wouldn't look at this and decide I have no idea what I'm doing (⩾﹏⩽)
+ * - Add reference to this: https://0x72.itch.io/2bitcharactergenerator
+ * - Add reference to license on the page
+ * - Add ref to my site. 
+ * - Any other shoutout type things?
  * 
  * BUGS: 
  * - Random seems to never give the max value - did I mess something up?
