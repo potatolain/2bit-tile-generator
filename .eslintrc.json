@@ -1,6 +1,10 @@
 {
     "rules": {
-      "no-unused-vars": "warn",
+      // It'd be nice if I could just warn about this and not have the CI build fail, but create-react-app is 
+      // exceptionally picky and their suggestion to do it is to manually reset the CI flag if I don't want my builds
+      // to suddenly fail instead of warning when they go to production. Their other suggestion is to
+      // stop using create-react-entirely and rewrite the code. I really don't get their logic sometimes.
+      "no-unused-vars": "off",
       "react/prop-types": "warn"
     }
   }

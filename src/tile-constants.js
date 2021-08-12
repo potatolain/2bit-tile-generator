@@ -7,7 +7,8 @@ export const AVAILABLE_TILE_TYPES = [
     // 'rock', 
     'brick', 
     'hole',
-    // 'plant'
+    // 'plant',
+    // 'sand'
   ];
   export const TILE_BACKGROUND_COLORS = {
     grass: 3,
