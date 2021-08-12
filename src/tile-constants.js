@@ -6,7 +6,7 @@ export const AVAILABLE_TILE_TYPES = [
     'block',
     // 'rock', 
     'brick', 
-    // 'hole',
+    'hole',
     // 'plant'
   ];
   export const TILE_BACKGROUND_COLORS = {
@@ -54,7 +54,10 @@ export const AVAILABLE_TILE_TYPES = [
       // {name: 'Color', type: 'palette', defaultValue: 2}
       {name: 'Height', min: 2, max: 8, type: 'range'}
     ],
-    hole: [],
+    hole: [
+      {name: 'Hole Size', min: 6, max: 14, type: 'range', step: 2},
+      {name: 'Fuzz Area', min: 1, max: 2, type: 'range', defaultValue: 1}
+    ],
     plant: []
   }
   

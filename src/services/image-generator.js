@@ -1,6 +1,6 @@
 import Jimp from 'jimp/es';
 
-import { TILE_NAMES, TILE_OPTIONS, TILE_BACKGROUND_COLORS, AVAILABLE_TILE_TYPES } from '../tile-contants';
+import { TILE_BACKGROUND_COLORS } from '../tile-constants';
 
 // Because js treats % as a remainder instead of modulus... because, sigh, programming languages were a mistake.
 function modulus(a, b) {
@@ -42,6 +42,9 @@ export default class ImageGenerator {
             break;
           case 'block':
             ImageGenerator.drawBlock(image, tileOpt, palette);
+            break;
+          case 'hole':
+            ImageGenerator.drawHole(image, tileOpt, palette);
             break;
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
@@ -95,7 +98,7 @@ export default class ImageGenerator {
       image.setPixelColor(palette[3], x, y);
       x = modulus(x + xDiff, image.bitmap.width);
       y = modulus(y + yDiff, image.bitmap.height);
-      while (x != originX && y != originY) {
+      while (x !== originX && y !== originY) {
         image.setPixelColor(palette[3], x, y);
         if (Math.random() > 0.3) {
           x = modulus(x + xDiff, image.bitmap.width);
@@ -153,7 +156,7 @@ export default class ImageGenerator {
       
       if (x === y) {
         image.setPixelColor(palette[2], x, y);
-      } else if (x == (image.bitmap.height - y - 1)) {
+      } else if (x === (image.bitmap.height - y - 1)) {
         image.setPixelColor(palette[1], x, y);
       }
       const h = ((image.bitmap.height / 2) - (tileSize / 2));
@@ -164,5 +167,31 @@ export default class ImageGenerator {
         }
       }
     });
+  }
+
+  static drawHole(image, tileOpt, palette) {
+    const borderWidth = Math.floor((image.bitmap.width / 2) - (tileOpt['Hole Size'] / 2));
+    const fuzzWidth = tileOpt['Fuzz Area'];
+
+    image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      if (
+        (x < borderWidth || x > (image.bitmap.width - 1 - borderWidth)) ||
+        (y < borderWidth || y > (image.bitmap.height - 1 - borderWidth))
+      ) {
+        
+        if (
+          (x >= (borderWidth - fuzzWidth) && x < borderWidth && (y > borderWidth && y < (image.bitmap.height - 1 - borderWidth))) ||
+          (x >= (borderWidth + tileOpt['Hole Size']) && x < (borderWidth + tileOpt['Hole Size'] + fuzzWidth) && (y > borderWidth && y < (image.bitmap.height -1 - borderWidth))) ||
+          
+          (y >= (borderWidth - fuzzWidth) && y < borderWidth && (x > borderWidth && x < (image.bitmap.width - 1 - borderWidth))) ||
+          (y >= (borderWidth + tileOpt['Hole Size']) && y < (borderWidth + tileOpt['Hole Size'] + fuzzWidth) && (x > borderWidth && x < (image.bitmap.width -1 - borderWidth)))
+        ) {
+          // Bail some of the time to make it "fuzzy"
+          if (Math.random() > 0.35) { return; }
+        }
+        image.setPixelColor(palette[2], x, y);
+      }
+    });
+
   }
 }

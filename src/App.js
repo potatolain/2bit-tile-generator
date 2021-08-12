@@ -17,7 +17,7 @@ import ImageGenerator from './services/image-generator';
 import PalettePreview from './components/palette-preview';
 
 // Constants
-import { TILE_NAMES, TILE_OPTIONS, TILE_BACKGROUND_COLORS, AVAILABLE_TILE_TYPES } from './tile-contants';
+import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES } from './tile-constants';
 
 /**
  * ADVANCED THINGS TO PLAY WITH
@@ -47,7 +47,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tileType: 'brick',
+      tileType: 'hole',
       tileProps: {},
       palette: [0x000000ff, 0x444444ff, 0xaaaaaaff, 0xffffffff],
       imageWidth: 16,
@@ -58,12 +58,22 @@ class App extends React.Component {
 
     // NOTE: This logic is almost-duplicated in the reRandomize method
     AVAILABLE_TILE_TYPES.forEach(t => {
+      // Seriously, it's a constructor. The react docs do this. Calm down.
+      // eslint-disable-next-line
       this.state.tileProps[t] = {};
       TILE_OPTIONS[t].forEach(opt => {
         if (opt.defaultValue !== undefined) {
+          // eslint-disable-next-line
           this.state.tileProps[t][opt.name] = opt.defaultValue;
         } else if (opt.min !== undefined && opt.max !== undefined) {
-          this.state.tileProps[t][opt.name] = Math.floor(Math.random() * (opt.max - opt.min)) + opt.min;
+          let val = Math.floor(Math.random() * (opt.max - opt.min +1)) + opt.min;
+
+          // Enforce the step sizein randomization
+          if (opt.step) { 
+            val -= (val % opt.step); 
+          }
+          // es-lint-disable-next-line: Once again, see above snark
+          this.state.tileProps[t][opt.name] = val;
         }
       });
     });
@@ -82,7 +92,14 @@ class App extends React.Component {
       TILE_OPTIONS[t].forEach(opt => {
         if (!opt.disabled) {
           if (opt.min !== undefined && opt.max !== undefined) {
-            newState.tileProps[t][opt.name] = Math.floor(Math.random() * (opt.max - opt.min)) + opt.min;
+            let val = Math.floor(Math.random() * (opt.max - opt.min + 1)) + opt.min;
+
+            // Enforce the step sizein randomization
+            if (opt.step) { 
+              val -= (val % opt.step); 
+            }
+
+            newState.tileProps[t][opt.name] = val;
           }
         }
       });
