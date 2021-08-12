@@ -119,7 +119,7 @@ class App extends React.Component {
               </SlRange>
               <div className="below-range">
                 <small className="left">{setting.min}</small>
-                <small className="mid">{this.state.tileProps[type][setting.name]}</small>
+                <small className="mid">Current: {this.state.tileProps[type][setting.name]}</small>
                 <small className="right">{setting.max}</small>
               </div>
             </div>;

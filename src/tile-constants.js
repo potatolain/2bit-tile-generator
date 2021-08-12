@@ -1,17 +1,22 @@
 export const AVAILABLE_TILE_TYPES = [
     'block',
     'brick', 
+    //'plant', // Aka "bush"
     'grass', 
     'hole',
     'water', 
     // Unimplemented tile types (so far!) 
     // 'lava', 
     // 'rock', 
-    // 'plant',
+    // NOTE: Rock is easier than it seems! Copy circle but let it crop to the bottom of the image automatically. 
+    // The bottom will flatten out and it looks almost perfect. Just need to colorize and add some texture
+    // Dummied out it below
     // 'sand'
   ];
 
   export const DEFAULT_TILE_TYPE = 'block';
+  // FIXME
+  // export const DEFAULT_TILE_TYPE = 'plant';
 
   export const TILE_BACKGROUND_COLORS = {
     grass: 3,
@@ -62,6 +67,10 @@ export const AVAILABLE_TILE_TYPES = [
       {name: 'Hole Size', min: 6, max: 14, type: 'range', step: 2},
       {name: 'Fuzz Area', min: 1, max: 2, type: 'range', defaultValue: 1}
     ],
-    plant: []
+    plant: [
+      {name: 'Bush Size', min: 3, max: 7, type: 'range'},
+      {name: 'Bush Color', type: 'palette', defaultValue: 2},
+      {name: 'Freckle Count', min: 3, max: 8, type: 'range'}
+    ]
   }
   

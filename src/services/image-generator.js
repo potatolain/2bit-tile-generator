@@ -46,6 +46,9 @@ export default class ImageGenerator {
           case 'hole':
             ImageGenerator.drawHole(image, tileOpt, palette);
             break;
+          case 'plant':
+            ImageGenerator.drawPlant(image, tileOpt, palette);
+            break;
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
         }
@@ -194,4 +197,60 @@ export default class ImageGenerator {
     });
 
   }
+
+  static drawPlant(image, tileOpt, palette) {
+
+    // Draw that circle
+    const r = tileOpt['Bush Size'];
+    const x = 8, y = 11 - Math.floor(tileOpt['Bush Size'] / 2);
+    let angle, x1, y1;
+    for (var i = 0; i < 360; i++) {
+      angle = i;
+      x1 = r * Math.cos(angle * Math.PI / 180);
+      y1 = r * Math.sin(angle * Math.PI / 180);
+
+      image.setPixelColor(palette[0], Math.round(x + x1), Math.round(y + y1));
+    }
+
+    // terribly simple color filling algorithm
+    for (var imgY = 0; imgY < image.bitmap.height; imgY++) {
+      let hitLeft = false, hitMid = false, hitRight = false, colorCount = 0;
+      for (var imgX = 0; imgX < image.bitmap.width; imgX++) {
+        if (image.getPixelColor(imgX, imgY) === palette[0]) {
+          colorCount++;
+          if (!hitLeft) {
+            hitLeft = true;
+          } else if (hitMid) {
+            hitRight = true;
+          }
+        } else {
+          if (hitLeft && image.getPixelColor(imgX, imgY) === palette[3]) {
+            hitMid = true;
+          }
+          if (hitMid && !hitRight && colorCount < 5) { // Must be on the inside of the circle
+            image.setPixelColor(palette[tileOpt['Bush Color']], imgX, imgY);
+          }
+        }
+      }
+    }
+
+    // Draw small shadow
+
+    // Pick a few random spots to draw berries
+  }
+
+  static drawRock(image, tileOpt, palette) {
+
+    const r = tileOpt['Bush Size'];
+    const x = 8, y = 8 + Math.floor(tileOpt['Bush Size'] / 2);
+    let angle, x1, y1;
+    for (var i = 0; i < 360; i++) {
+      angle = i;
+      x1 = r * Math.cos(angle * Math.PI / 180);
+      y1 = r * Math.sin(angle * Math.PI / 180);
+
+      image.setPixelColor(palette[0], Math.round(x + x1), Math.round(y + y1));
+    }
+  }
+
 }
