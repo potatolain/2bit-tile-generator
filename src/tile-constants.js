@@ -1,15 +1,18 @@
 export const AVAILABLE_TILE_TYPES = [
+    'block',
+    'brick', 
     'grass', 
+    'hole',
     'water', 
     // Unimplemented tile types (so far!) 
     // 'lava', 
-    'block',
     // 'rock', 
-    'brick', 
-    'hole',
     // 'plant',
     // 'sand'
   ];
+
+  export const DEFAULT_TILE_TYPE = 'block';
+
   export const TILE_BACKGROUND_COLORS = {
     grass: 3,
     water: 2,

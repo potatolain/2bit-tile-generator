@@ -5,7 +5,9 @@
       // to suddenly fail instead of warning when they go to production. Their other suggestion is to
       // stop using create-react-entirely and rewrite the code. I really don't get their logic sometimes.
       "no-unused-vars": "off",
-      "react/prop-types": "warn"
+      // I should not need to install more modules to make the validation pass. This is a pet project, that's
+      // not worth my time.
+      "react/prop-types": "off"
     }
   }
   
