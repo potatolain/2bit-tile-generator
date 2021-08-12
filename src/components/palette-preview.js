@@ -1,4 +1,5 @@
 import React from 'react';
+import './palette-preview.css';
 
 export default class PalettePreview extends React.Component {
 
