@@ -26,13 +26,10 @@ import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } fro
  * 
  * 
  * GENERAL TODO:
- * - Implement everything that's not grass
+ * - Implement more tiles
  * - Add more palettes (steal from the sprite generator? Try defaults built into nesst? Other?)
  * - Allow palette swapping?
  * - Pretty the codebase up so an employer wouldn't look at this and decide I have no idea what I'm doing (⩾﹏⩽)
- * 
- * BUGS: 
- * - Random seems to never give the max value - did I mess something up?
  */
 
 import './App.css';
