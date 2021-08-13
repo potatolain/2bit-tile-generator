@@ -19,6 +19,9 @@ function getRandomImageCoords(image) {
 /**
  * Image generation logic. Used to generate all of the various images using Jimp.
  * Define available image types in the constants in ../tile-constants
+ * 
+ * Jimp doesn't have any primitive drawing ability, and I can't find a library to do it. Maybe I'll make one by myself, but until
+ * such a time, things are done manually here. (and very, very clumsily)
  */
 export default class ImageGenerator {
   // Really just a home for static methods for now. Don't even construct it.
@@ -49,6 +52,8 @@ export default class ImageGenerator {
           case 'plant':
             ImageGenerator.drawPlant(image, tileOpt, palette);
             break;
+          case 'rock':
+            ImageGenerator.drawRock(image, tileOpt, palette);
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
         }
@@ -198,11 +203,15 @@ export default class ImageGenerator {
 
   }
 
+  // NOTE: I really don't like the results of this, it needs a rewrite. Maybe someone can use it, but it feels lackluster at best. 
+  // I'm not sure what else I can really do procedurally, or even non-procedurally. PRs welcome, with either code or even a 16x16 image
+  // and some notes on how we could tweak it. 
   static drawPlant(image, tileOpt, palette) {
 
     // Draw that circle
     const r = tileOpt['Bush Size'];
-    const x = 8, y = 11 - Math.floor(tileOpt['Bush Size'] / 2);
+    const x = 8, y = 10 - Math.floor(tileOpt['Bush Size'] / 2);
+    
     let angle, x1, y1;
     for (var i = 0; i < 360; i++) {
       angle = i;
@@ -235,14 +244,43 @@ export default class ImageGenerator {
     }
 
     // Draw small shadow
+    for (let shadowX = x - Math.floor(r/2)+1; shadowX < x + r+1; shadowX++) {
+      image.setPixelColor(palette[0], shadowX, y + r + 1);
+      if (shadowX < x + r) {
+        image.setPixelColor(palette[0], shadowX, y + r);
+      }
+    }
 
-    // Pick a few random spots to draw berries
+    // Pick a few random spots to draw berries/freckles/whatever
+    let freckleCount = 0;
+    for (var i = 0; i < 100; i++) { // Limit # of tries to make, just in case 
+      if (freckleCount >= tileOpt['Freckle Count']) {
+        break;
+      }
+
+      const fx = Math.floor(Math.random() * (image.bitmap.width)),
+        fy = Math.floor(Math.random() * image.bitmap.height);
+
+      if (image.getPixelColor(fx,fy) === palette[tileOpt['Bush Color']]) {
+        freckleCount++;
+        image.setPixelColor(palette[tileOpt['Freckle Color']], fx, fy);
+
+        if (tileOpt['Freckle Size'] > 1) {
+          [[fx-1, fy], [fx+1,fy], [fx, fy-1], [fx, fy+1]].forEach(coords => {
+            const fxx = coords[0], fyy = coords[1];
+            if (image.getPixelColor(fxx, fyy) === palette[tileOpt['Bush Color']]) {
+              image.setPixelColor(palette[tileOpt['Freckle Color']], fxx, fyy);
+            }
+          });
+        }
+      }
+    }
   }
 
   static drawRock(image, tileOpt, palette) {
 
-    const r = tileOpt['Bush Size'];
-    const x = 8, y = 8 + Math.floor(tileOpt['Bush Size'] / 2);
+    const r = tileOpt['Rock Size'];
+    const x = 8, y = image.bitmap.height - (tileOpt['Rock Size'] - 2);
     let angle, x1, y1;
     for (var i = 0; i < 360; i++) {
       angle = i;
@@ -250,6 +288,32 @@ export default class ImageGenerator {
       y1 = r * Math.sin(angle * Math.PI / 180);
 
       image.setPixelColor(palette[0], Math.round(x + x1), Math.round(y + y1));
+    }
+
+    // terribly simple color filling algorithm
+    for (var imgY = 0; imgY < image.bitmap.height; imgY++) {
+      let hitLeft = false, hitMid = false, hitRight = false, colorCount = 0;
+      for (var imgX = 0; imgX < image.bitmap.width; imgX++) {
+        if (image.getPixelColor(imgX, imgY) === palette[0]) {
+          colorCount++;
+          if (!hitLeft) {
+            hitLeft = true;
+          } else if (hitMid) {
+            hitRight = true;
+          }
+        } else {
+          if (hitLeft && image.getPixelColor(imgX, imgY) === palette[3]) {
+            hitMid = true;
+          }
+          if (hitMid && !hitRight && colorCount < 5) { // Must be on the inside of the circle
+            if ((imgX - imgY) < r - Math.floor(r/1.2)) {
+              image.setPixelColor(palette[tileOpt['Rock Color']], imgX, imgY);
+            } else {
+              image.setPixelColor(palette[tileOpt['Rock Highlight Color']], imgX, imgY);
+            }
+          }
+        }
+      }
     }
   }
 
