@@ -39,9 +39,9 @@ export const AVAILABLE_TILE_TYPES = [
   export const TILE_OPTIONS = {
     grass: [
       {name: 'Palette', type: 'palette', defaultValue: 'NES Default Green'},
-      {name: 'Short Blades', min: 0, max: 10, type: 'range'},
-      {name: 'Tall Blades', min: 0, max: 10, type: 'range'},
-      {name: 'Triangles', min: 0, max: 8, type: 'range'}
+      {name: 'Short Blades', min: 0, max: 10, type: 'range', defaultValue: 1},
+      {name: 'Tall Blades', min: 0, max: 10, type: 'range', defaultValue: 0},
+      {name: 'Triangles', min: 0, max: 8, type: 'range', defaultValue: 4}
     ],
     water: [
       {name: 'Palette', type: 'palette', defaultValue: 'NES Default Blue'},
