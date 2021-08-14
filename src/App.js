@@ -5,19 +5,18 @@ import '@shoelace-style/shoelace/dist/themes/base.css';
 import SlButton from '@shoelace-style/react/dist/button';
 import SlSelect from '@shoelace-style/react/dist/select';
 import SlMenuItem from '@shoelace-style/react/dist/menu-item';
-import SlRange from '@shoelace-style/react/dist/range';
 import SlTooltip from '@shoelace-style/react/dist/tooltip';
-import SlRadio from '@shoelace-style/react/dist/radio';
-import SlRadioGroup from '@shoelace-style/react/dist/radio-group';
 
 // Services
 import ImageGenerator from './services/image-generator';
 
 // Custom components
-import PalettePreview from './components/palette-preview';
+import TileSetting from './components/tile-setting';
 
 // Constants
-import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } from './tile-constants';
+import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } from './constants/tile-constants';
+import { getPalette } from './constants/palette-constants';
+
 
 /**
  * ADVANCED THINGS TO PLAY WITH
@@ -41,7 +40,8 @@ class App extends React.Component {
     this.state = {
       tileType: DEFAULT_TILE_TYPE,
       tileProps: {},
-      palette: [0x000000ff, 0x444444ff, 0xaaaaaaff, 0xffffffff],
+      currentPaletteId: 0,
+      palette: getPalette(0),
       imageWidth: 16,
       imageHeight: 16,
       // Transparent 1px gif so we don't show a broken image
@@ -98,52 +98,6 @@ class App extends React.Component {
     });
     this.setState(newState, this.reloadImage);
   };
-
-  // Kind of big method that pops out components for each of the tile options we have available.
-  // This might be a good candidate for the type of thing to break out/apart
-  getTileOptions(type) {
-    return TILE_OPTIONS[type].map(setting => {
-      if (setting.disabled) { return <span key={"disabled-setting-" + setting.type + setting.name}></span>; }
-      switch (setting.type) {
-        case 'range':
-          // This could probably be a component of its
-          return <div className="tile-option" key={"range-" + setting.type + setting.name}>
-              <SlRange key={type + setting.name} 
-                min={setting.min} 
-                max={setting.max} 
-                step={setting.step || 1} 
-                label={setting.name} 
-                value={this.state.tileProps[type][setting.name]} 
-                onSlChange={e => this.updateTileState(type, setting.name, e.target.value)}>
-              </SlRange>
-              <div className="below-range">
-                <small className="left">{setting.min}</small>
-                <small className="mid">Current: {this.state.tileProps[type][setting.name]}</small>
-                <small className="right">{setting.max}</small>
-              </div>
-            </div>;
-        case 'palette':
-          return <div className="tile-option" key={"palette-" + setting.type + setting.name}>
-            <SlRadioGroup label={setting.name}>
-              {[0, 1, 2, 3].map(n => {
-                return <SlRadio 
-                    value={n} 
-                    checked={this.state.tileProps[type][setting.name] === n ? true : false} 
-                    key={"palette-color" + setting.type + setting.name + '-' + n} 
-                    onSlChange={e => e.target.checked ? this.updateTileState(type, setting.name, n) : null}
-                  >
-                    Color {n+1} 
-                    <PalettePreview palette={this.state.palette[n].toString(16).padStart(8, '0')}></PalettePreview>
-                  </SlRadio>
-              })}
-            </SlRadioGroup>
-          </div>
-        default:
-          console.error(`Unknown tile option type "${setting.type}" found!`, setting);
-          return <span></span>;
-      }
-    });
-  }
 
   // Use jimp to redraw the image based on current state. This could probably live in a service that
   // updates the store. I'd make it a component, but the image needs to remain the same in all places.
@@ -224,7 +178,14 @@ class App extends React.Component {
                 </SlSelect>
               </div>
 
-              {this.getTileOptions(this.state.tileType)}
+              {TILE_OPTIONS[this.state.tileType].map(setting => 
+                <TileSetting 
+                  setting={setting} 
+                  state={this.state} 
+                  tileTypeId={this.state.tileType} 
+                  updateTileState={(a, b, c) => this.updateTileState(a, b, c)
+                }></TileSetting>
+              )}
             </div>
           </div>
         </section>

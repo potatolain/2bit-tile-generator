@@ -1,6 +1,6 @@
 import Jimp from 'jimp/es';
 
-import { TILE_BACKGROUND_COLORS } from '../tile-constants';
+import { TILE_BACKGROUND_COLORS } from '../constants/tile-constants';
 
 // Because js treats % as a remainder instead of modulus... because, sigh, programming languages were a mistake.
 function modulus(a, b) {
