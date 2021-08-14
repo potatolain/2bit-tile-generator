@@ -4,11 +4,10 @@ export const AVAILABLE_TILE_TYPES = [
     'plant', // Aka "bush"
     'grass', 
     'hole',
-    'water', 
-    // Unimplemented tile types (so far!) 
-    // 'lava', 
+    'lava', 
     'rock', 
-    // 'sand'
+    'sand',
+    'water', 
   ];
 
   export const DEFAULT_TILE_TYPE = 'block';
@@ -21,7 +20,8 @@ export const AVAILABLE_TILE_TYPES = [
     brick: 2,
     hole: 0,
     plant: 3,
-    block: 3
+    block: 3,
+    sand: 0
   };
   
   export const TILE_NAMES = {
@@ -33,6 +33,7 @@ export const AVAILABLE_TILE_TYPES = [
     rock: 'Rock',
     hole: 'Hole / Gap',
     plant: 'Bush',
+    sand: 'Sand'
   }
   
   export const TILE_OPTIONS = {
@@ -47,7 +48,11 @@ export const AVAILABLE_TILE_TYPES = [
       // that's a bit more complex than I'd hoped.
       {name: 'Deeper Areas', min: 0, max: 3, type: 'range', disabled: true, defaultValue: 0}
     ],
-    lava: [],
+    lava: [
+      {name: 'Frequency', min: 15, max: 25, type: 'range' },
+      {name: 'Offset', min: 0, max: 15, type: 'range'},
+      {name: 'Wave Width', min: 4, max: 8, type: 'range'}
+    ],
     rock: [
       {name: 'Rock Size', min: 3, max: 7, type: 'range'},
       {name: 'Rock Color', type: 'palette', defaultValue: 2},
@@ -71,6 +76,11 @@ export const AVAILABLE_TILE_TYPES = [
       {name: 'Freckle Color', type: 'palette', defaultValue: 1},
       {name: 'Freckle Count', min: 2, max: 8, type: 'range'},
       {name: 'Freckle Size', min: 1, max: 2, type: 'range', defaultValue: 1}
+    ],
+    sand: [
+      {name: 'Frequency', min: 15, max: 75, type: 'range' },
+      {name: 'Offset', min: 0, max: 15, type: 'range'},
+      {name: 'Wave Width', min: 3, max: 12, type: 'range'}
     ]
   }
   

@@ -26,9 +26,8 @@ import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } fro
  * 
  * 
  * GENERAL TODO:
- * - Implement more tiles
  * - Add more palettes (steal from the sprite generator? Try defaults built into nesst? Other?)
- * - Allow palette swapping?
+ * - Allow palette reordering?
  * - Pretty the codebase up so an employer wouldn't look at this and decide I have no idea what I'm doing (⩾﹏⩽)
  */
 
@@ -61,7 +60,7 @@ class App extends React.Component {
         } else if (opt.min !== undefined && opt.max !== undefined) {
           let val = Math.floor(Math.random() * (opt.max - opt.min +1)) + opt.min;
 
-          // Enforce the step sizein randomization
+          // Enforce the step size in randomization
           if (opt.step) { 
             val -= (val % opt.step); 
           }

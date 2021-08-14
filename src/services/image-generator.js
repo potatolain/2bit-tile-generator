@@ -54,6 +54,13 @@ export default class ImageGenerator {
             break;
           case 'rock':
             ImageGenerator.drawRock(image, tileOpt, palette);
+            break;
+          case 'lava':
+            ImageGenerator.drawLava(image, tileOpt, palette);
+            break;
+          case 'sand':
+            ImageGenerator.drawSand(image, tileOpt, palette);
+            break;
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
         }
@@ -313,6 +320,56 @@ export default class ImageGenerator {
             }
           }
         }
+      }
+    }
+  }
+
+  static drawLava(image, tileOpt, palette) {
+    const frequency = (tileOpt['Frequency'] / 100),
+      offset = tileOpt['Offset'],
+      waveWidth = tileOpt['Wave Width'];
+    for (let y = 0; y < image.bitmap.width; y++) {
+      let x = Math.sin((frequency * (Math.abs(y-offset) % image.bitmap.width)) ) * Math.floor(image.bitmap.height / 3);
+
+
+      while (x < image.bitmap.width) {
+        // Set a dummy color to replace
+        image.setPixelColor(0xff00ffff, x, y);
+        x += waveWidth;
+      }
+
+      // Repeat iterating over the whole thing, swapping colors
+      let currColor = 1;
+      for (x = 0; x < image.bitmap.width; x++) {
+        if (image.getPixelColor(x, y) === 0xff00ffff) {
+          currColor = 1+((currColor + 1) % 3);
+        }
+        image.setPixelColor(palette[currColor], x, y);
+      }
+    }
+  }
+
+  static drawSand(image, tileOpt, palette) {
+    const frequency = (tileOpt['Frequency'] / 100),
+      offset = tileOpt['Offset'],
+      waveWidth = tileOpt['Wave Width'];
+    for (let y = 0; y < image.bitmap.width; y++) {
+      let x = Math.sin((frequency * (Math.abs(y-offset) % image.bitmap.width)) ) * Math.floor(image.bitmap.height / 3);
+
+
+      while (x < image.bitmap.width) {
+        // Set a dummy color to replace
+        image.setPixelColor(0xff00ffff, x, y);
+        x += waveWidth;
+      }
+
+      // Repeat iterating over the whole thing, swapping colors
+      let currColor = 2;
+      for (x = 0; x < image.bitmap.width; x++) {
+        if (image.getPixelColor(x, y) === 0xff00ffff) {
+          currColor = 2+((currColor + 1) % 2);
+        }
+        image.setPixelColor(palette[currColor], x, y);
       }
     }
   }
