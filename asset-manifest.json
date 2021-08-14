@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/2bit-tile-generator/static/css/main.b16b5232.chunk.css",
-    "main.js": "/2bit-tile-generator/static/js/main.71031059.chunk.js",
-    "main.js.map": "/2bit-tile-generator/static/js/main.71031059.chunk.js.map",
-    "runtime-main.js": "/2bit-tile-generator/static/js/runtime-main.53dda5ab.js",
-    "runtime-main.js.map": "/2bit-tile-generator/static/js/runtime-main.53dda5ab.js.map",
+    "main.css": "/2bit-tile-generator/static/css/main.48df45f0.chunk.css",
+    "main.js": "/2bit-tile-generator/static/js/main.2ecc2f94.chunk.js",
+    "main.js.map": "/2bit-tile-generator/static/js/main.2ecc2f94.chunk.js.map",
+    "runtime-main.js": "/2bit-tile-generator/static/js/runtime-main.79bcb635.js",
+    "runtime-main.js.map": "/2bit-tile-generator/static/js/runtime-main.79bcb635.js.map",
     "static/css/2.aacb7781.chunk.css": "/2bit-tile-generator/static/css/2.aacb7781.chunk.css",
-    "static/js/2.19b96abb.chunk.js": "/2bit-tile-generator/static/js/2.19b96abb.chunk.js",
-    "static/js/2.19b96abb.chunk.js.map": "/2bit-tile-generator/static/js/2.19b96abb.chunk.js.map",
-    "static/js/3.52a0b17a.chunk.js": "/2bit-tile-generator/static/js/3.52a0b17a.chunk.js",
-    "static/js/3.52a0b17a.chunk.js.map": "/2bit-tile-generator/static/js/3.52a0b17a.chunk.js.map",
+    "static/js/2.7cc8445e.chunk.js": "/2bit-tile-generator/static/js/2.7cc8445e.chunk.js",
+    "static/js/2.7cc8445e.chunk.js.map": "/2bit-tile-generator/static/js/2.7cc8445e.chunk.js.map",
+    "static/js/3.9c0db06b.chunk.js": "/2bit-tile-generator/static/js/3.9c0db06b.chunk.js",
+    "static/js/3.9c0db06b.chunk.js.map": "/2bit-tile-generator/static/js/3.9c0db06b.chunk.js.map",
     "index.html": "/2bit-tile-generator/index.html",
     "static/css/2.aacb7781.chunk.css.map": "/2bit-tile-generator/static/css/2.aacb7781.chunk.css.map",
-    "static/css/main.b16b5232.chunk.css.map": "/2bit-tile-generator/static/css/main.b16b5232.chunk.css.map",
-    "static/js/2.19b96abb.chunk.js.LICENSE.txt": "/2bit-tile-generator/static/js/2.19b96abb.chunk.js.LICENSE.txt"
+    "static/css/main.48df45f0.chunk.css.map": "/2bit-tile-generator/static/css/main.48df45f0.chunk.css.map",
+    "static/js/2.7cc8445e.chunk.js.LICENSE.txt": "/2bit-tile-generator/static/js/2.7cc8445e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.53dda5ab.js",
+    "static/js/runtime-main.79bcb635.js",
     "static/css/2.aacb7781.chunk.css",
-    "static/js/2.19b96abb.chunk.js",
-    "static/css/main.b16b5232.chunk.css",
-    "static/js/main.71031059.chunk.js"
+    "static/js/2.7cc8445e.chunk.js",
+    "static/css/main.48df45f0.chunk.css",
+    "static/js/main.2ecc2f94.chunk.js"
   ]
 }
