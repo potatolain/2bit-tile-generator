@@ -1,3 +1,24 @@
 .tile-option .palette-preview {
-    float: right;
+  float: right;
+}
+
+.tile-option .below-range {
+  display: flex;
+  width: 100%;
+}
+
+.tile-option .below-range > * {
+  width: 33.3333%;
+}
+
+.tile-option .left {
+  text-align: left;
+}
+
+.tile-option .mid {
+  text-align: center;
+}
+
+.tile-option .right {
+  text-align: right;
 }

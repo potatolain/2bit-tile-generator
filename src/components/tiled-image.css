@@ -1,0 +1,16 @@
+.tile-preview-collection > img {
+    width: 64px;
+    image-rendering: pixelated;
+    margin: 0;
+    padding: 0;
+  }
+  
+.tile-preview-collection {
+  width: 192px; 
+  border: 1px solid var(--border-color);
+  display: grid;
+  margin: auto;
+  grid-template-columns: 64px 64px 64px;
+  grid-template-rows: 64px 64px 64px;
+  gap: 0;
+}

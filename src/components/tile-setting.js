@@ -12,7 +12,12 @@ import { availablePalettes, getPalette } from '../constants/palette-constants';
 import PaletteColorPreview from './palette-color-preview';
 import PalettePreview from './palette-preview';
 
-// Given a setting property (such as those defined in tile-constants)
+// Given a setting property (such as those defined in tile-constants), render it as a configurable setting.
+// Available types are: range, color, and palette
+// props: 
+// - setting: The settings object from constants. Keys detailed there
+// - state: The application state surrounding this thing. This is kind of clunky, and a workaround for redux!
+// - tileTypeId: A 'type' of tile, the key for the settings object.
 export default class TileSetting extends React.Component {
   setting = null;
   state = null;

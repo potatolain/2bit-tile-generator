@@ -15,7 +15,6 @@
   color: #61dafb;
 }
 
-
 .App .configurator {
   display: flex;
 }
@@ -46,46 +45,12 @@
   margin: 0 5px;
 }
 
-.App .below-range {
-  display: flex;
-  width: 100%;
-}
-.App .below-range > * {
-  width: 33.3333%;
-}
-.App .below-range .left {
-  text-align: left;
-}
-.App .below-range .mid {
-  text-align: center;
-}
-.App .below-range .right {
-  text-align: right;
-}
-
 .App .tile-preview {
   width: 64px;
   border: 1px solid var(--border-color);
   image-rendering: pixelated;
   display: block;
   margin: auto;
-}
-
-.App .tile-preview-collection {
-  width: 192px; 
-  border: 1px solid var(--border-color);
-  display: grid;
-  margin: auto;
-  grid-template-columns: 64px 64px 64px;
-  grid-template-rows: 64px 64px 64px;
-  gap: 0;
-}
-
-.App .tile-preview-collection > img {
-  width: 64px;
-  image-rendering: pixelated;
-  margin: 0;
-  padding: 0;
 }
 
 .App .dl-bar {
@@ -100,4 +65,5 @@
 footer {
   margin: 10px;
   padding: 8px 16px;
+  text-align: center;
 }
