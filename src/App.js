@@ -17,19 +17,6 @@ import TileSetting from './components/tile-setting';
 import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } from './constants/tile-constants';
 import { getPalette } from './constants/palette-constants';
 
-
-/**
- * ADVANCED THINGS TO PLAY WITH
- * Weighted random, to make tiles look nicer: https://redstapler.co/javascript-weighted-random/ -- option 2 looks nice
- * For grass it'd be nice to limit to fewer lines and blades, and more triangles, for example
- * 
- * 
- * GENERAL TODO:
- * - Add more palettes (steal from the sprite generator? Try defaults built into nesst? Other?)
- * - Allow palette reordering?
- * - Pretty the codebase up so an employer wouldn't look at this and decide I have no idea what I'm doing (⩾﹏⩽)
- */
-
 import './App.css';
 // Huge app component that could probably be broken down well if I got smart with a Store for state
 class App extends React.Component {
@@ -40,7 +27,6 @@ class App extends React.Component {
     this.state = {
       tileType: DEFAULT_TILE_TYPE,
       tileProps: {},
-      currentPaletteId: 0,
       palette: getPalette(0),
       imageWidth: 16,
       imageHeight: 16,
@@ -53,6 +39,7 @@ class App extends React.Component {
       // Seriously, it's a constructor. The react docs do this. Calm down.
       // eslint-disable-next-line
       this.state.tileProps[t] = {};
+
       TILE_OPTIONS[t].forEach(opt => {
         if (opt.defaultValue !== undefined) {
           // eslint-disable-next-line
@@ -102,7 +89,11 @@ class App extends React.Component {
   // Use jimp to redraw the image based on current state. This could probably live in a service that
   // updates the store. I'd make it a component, but the image needs to remain the same in all places.
   async getCurrentTileImage() {
-    return await ImageGenerator.generateImage(this.state.tileType, this.state.tileProps[this.state.tileType], this.state.palette);
+    let palette = this.state.palette;
+    if (this.state.tileProps[this.state.tileType].Palette) {
+      palette = getPalette(this.state.tileProps[this.state.tileType].Palette);
+    }
+    return await ImageGenerator.generateImage(this.state.tileType, this.state.tileProps[this.state.tileType], palette);
   }
 
   // Rebuild the image shown on the page from available settings.
@@ -180,6 +171,7 @@ class App extends React.Component {
 
               {TILE_OPTIONS[this.state.tileType].map(setting => 
                 <TileSetting 
+                  key={this.state.tileType + setting.name}
                   setting={setting} 
                   state={this.state} 
                   tileTypeId={this.state.tileType} 
