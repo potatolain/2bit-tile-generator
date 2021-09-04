@@ -1,6 +1,6 @@
 import Jimp from 'jimp/es';
 
-import { TILE_BACKGROUND_COLORS } from '../constants/tile-constants';
+import { TILE_BACKGROUND_COLORS, IMAGE_WIDTH, IMAGE_HEIGHT, AVAILABLE_TILE_TYPES } from '../constants/tile-constants';
 
 // Because js treats % as a remainder instead of modulus... because, sigh, programming languages were a mistake.
 function modulus(a, b) {
@@ -29,7 +29,7 @@ export default class ImageGenerator {
   static generateImage(tileType, tileOpt, palette) {
     // Jimp isn't super promise friendly - technically it works but it's pretty sketchy at times. Wrap this instead.
     return new Promise((resolve, reject) =>{
-      new Jimp(16, 16, palette[TILE_BACKGROUND_COLORS[tileType]], (err, image) =>{
+      new Jimp(IMAGE_WIDTH, IMAGE_HEIGHT, palette[TILE_BACKGROUND_COLORS[tileType]], (err, image) =>{
         if (err) { reject(err); }
 
         // Big, kind of ugly switch statement for each of our available tile types, determining how to draw each one.
@@ -372,6 +372,32 @@ export default class ImageGenerator {
         image.setPixelColor(palette[currColor], x, y);
       }
     }
+  }
+
+  static async generateFullSet(imageState) {
+    return new Promise((resolve, reject) =>{
+      new Jimp(IMAGE_WIDTH * AVAILABLE_TILE_TYPES.length, IMAGE_HEIGHT, 0xffffffff, (err, image) =>{
+        if (err) { reject(err); }
+
+        // Force back into async context
+        (async () => {
+
+          // Loop over each available image type
+          for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++ ) {
+            let thisB64 = imageState[AVAILABLE_TILE_TYPES[i]];
+            thisB64 = thisB64.substr(thisB64.indexOf(',')+1);
+            let thisImg = await Jimp.read(Buffer.from(thisB64, 'base64'));
+            await image.blit(thisImg, i*IMAGE_WIDTH, 0);
+          }
+
+
+          return image.getBase64Async('image/png');
+        })().then(resolve, reject);
+
+      });
+
+
+    });
   }
 
 }

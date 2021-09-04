@@ -91,5 +91,7 @@ export const AVAILABLE_TILE_TYPES = [
       {name: 'Offset', min: 0, max: 15, type: 'range'},
       {name: 'Wave Width', min: 3, max: 12, type: 'range'}
     ]
-  }
+  };
   
+  export const IMAGE_WIDTH = 16;
+  export const IMAGE_HEIGHT = 16;

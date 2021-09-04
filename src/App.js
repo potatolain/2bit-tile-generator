@@ -137,6 +137,21 @@ class App extends React.Component {
     }, this.reloadImage);
   }
 
+  async downloadAll() {
+    // First, loop over all images and make sure we've generated them
+    for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++) {
+      await this.generateTileImage(AVAILABLE_TILE_TYPES[i]);
+    }
+
+    const img = await ImageGenerator.generateFullSet(this.state.builtTileImages);
+
+    // Force a download, the new old-fashioned way
+    let a = document.createElement("a");
+    a.href = "data:" + img; 
+    a.download = "Tileset.png";
+    a.click();
+  }
+
 
   render() {
     return (
@@ -147,6 +162,9 @@ class App extends React.Component {
         <section>
 
           <div className="control-bar">
+            <SlTooltip content="Download a single png file with all tiles">
+              <SlButton onClick={() => this.downloadAll()}>Download All</SlButton>
+            </SlTooltip>
             <SlTooltip content="Randomize the settings for all tiles.">
               <SlButton onClick={() => this.reRandomize()}>Randomize Settings</SlButton>
             </SlTooltip>
