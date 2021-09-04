@@ -1,5 +1,9 @@
 # Change History
 
+## 1.1.2 
+
+* Expose changelog on page (sorta)
+
 ## 1.1.1 
 
 * Fix a few ios/mobile bugs

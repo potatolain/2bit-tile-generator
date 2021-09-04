@@ -81,9 +81,11 @@ footer {
   position: relative;
 }
 
-footer p.version {
+footer a.version {
   position: absolute;
   right: 8px;
-  bottom: 0;
-  font-size: 50%;
+  bottom: 8px;
+  font-size: 75%;
+  color: inherit;
+  text-decoration: none;
 }
