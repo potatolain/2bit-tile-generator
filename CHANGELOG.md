@@ -1,5 +1,10 @@
 # Change History
 
+## 1.1.3
+
+* Add new tile type: Bridge
+* Fix bug with color of options
+
 ## 1.1.2 
 
 * Expose changelog on page (sorta)

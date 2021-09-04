@@ -61,6 +61,9 @@ export default class ImageGenerator {
           case 'sand':
             ImageGenerator.drawSand(image, tileOpt, palette);
             break;
+          case 'bridge':
+            ImageGenerator.drawBridge(image, tileOpt, palette);
+            break;
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
         }
@@ -374,9 +377,19 @@ export default class ImageGenerator {
     }
   }
 
+  static async drawBridge(image, tileOpt, palette) {
+    image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      if (x % (tileOpt['Board Width']+1) === 0 || y < tileOpt['Border Width'] || y > (image.bitmap.width - tileOpt['Border Width'] - 1)) {
+        image.setPixelColor(palette[tileOpt['Separator Color']], x, y);
+      } else {
+        image.setPixelColor(palette[tileOpt['Board Color']], x, y);
+      }
+    })
+  }
+
   static async generateFullSet(imageState) {
     return new Promise((resolve, reject) =>{
-      new Jimp(IMAGE_WIDTH * AVAILABLE_TILE_TYPES.length, IMAGE_HEIGHT, 0xffffffff, (err, image) =>{
+      new Jimp(IMAGE_WIDTH * (AVAILABLE_TILE_TYPES.length+1), IMAGE_HEIGHT, 0xffffffff, (err, image) =>{
         if (err) { reject(err); }
 
         // Force back into async context
@@ -387,7 +400,7 @@ export default class ImageGenerator {
             let thisB64 = imageState[AVAILABLE_TILE_TYPES[i]];
             thisB64 = thisB64.substr(thisB64.indexOf(',')+1);
             let thisImg = await Jimp.read(Buffer.from(thisB64, 'base64'));
-            await image.blit(thisImg, i*IMAGE_WIDTH, 0);
+            await image.blit(thisImg, (i+1)*IMAGE_WIDTH, 0);
           }
 
 
@@ -399,5 +412,4 @@ export default class ImageGenerator {
 
     });
   }
-
 }

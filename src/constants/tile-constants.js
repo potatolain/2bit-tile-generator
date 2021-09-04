@@ -1,13 +1,14 @@
 export const AVAILABLE_TILE_TYPES = [
     'block',
-    'brick', 
+    'brick',
+    'bridge', 
     'plant', // Aka "bush"
     'grass', 
     'hole',
     'lava', 
     'rock', 
     'sand',
-    'water', 
+    'water',
   ];
 
   export const DEFAULT_TILE_TYPE = 'block';
@@ -21,7 +22,8 @@ export const AVAILABLE_TILE_TYPES = [
     hole: 0,
     plant: 3,
     block: 3,
-    sand: 0
+    sand: 0,
+    bridge: 0
   };
   
   export const TILE_NAMES = {
@@ -33,7 +35,8 @@ export const AVAILABLE_TILE_TYPES = [
     rock: 'Rock',
     hole: 'Hole / Gap',
     plant: 'Bush',
-    sand: 'Sand'
+    sand: 'Sand',
+    bridge: 'Bridge'
   }
   
   export const TILE_OPTIONS = {
@@ -90,6 +93,13 @@ export const AVAILABLE_TILE_TYPES = [
       {name: 'Frequency', min: 15, max: 75, type: 'range' },
       {name: 'Offset', min: 0, max: 15, type: 'range'},
       {name: 'Wave Width', min: 3, max: 12, type: 'range'}
+    ],
+    bridge: [
+      {name: 'Palette', type: 'palette', defaultValue: 'NES Default Red'},
+      {name: 'Board Width', min: 3, max: 9, type: 'range', step: 2, defaultValue: 7},
+      {name: 'Border Width', min: 0, max: 2, type: 'range', defaultValue: 1},
+      {name: 'Board Color', type: 'color', defaultValue: 1},
+      {name: 'Separator Color', type: 'color', defaultValue: 0},
     ]
   };
   
