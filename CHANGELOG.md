@@ -3,6 +3,7 @@
 ## 1.1.4 
 
 * Change tiled preview style based on the type of image being used, so ladder looks like a ladder, etc
+* Change rock default color and such to make it fit better with desert
 
 ## 1.1.3
 

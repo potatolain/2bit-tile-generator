@@ -10,6 +10,7 @@ export const AVAILABLE_TILE_TYPES = [
     'rock', 
     'sand',
     'water',
+    // TODO: Stairs
   ];
 
   export const DEFAULT_TILE_TYPE = 'block';
@@ -69,9 +70,9 @@ export const AVAILABLE_TILE_TYPES = [
       'grass', 'grass', 'grass', 
     ],
     rock: [
+      'sand', 'sand', 'sand',
       'rock', 'rock', 'rock',
-      'rock', 'rock', 'rock',
-      'rock', 'rock', 'rock',
+      'sand', 'sand', 'sand',
     ],
     hole: [
       'grass', 'grass', 'grass',
@@ -121,7 +122,7 @@ export const AVAILABLE_TILE_TYPES = [
       {name: 'Wave Width', min: 4, max: 8, type: 'range'}
     ],
     rock: [
-      {name: 'Palette', type: 'palette', defaultValue: 'Gameboy'},
+      {name: 'Palette', type: 'palette', defaultValue: 'NES Default Yellow'},
       {name: 'Rock Size', min: 3, max: 7, type: 'range'},
       {name: 'Rock Color', type: 'color', defaultValue: 2},
       {name: 'Rock Highlight Color', type: 'color', defaultValue: 3}
