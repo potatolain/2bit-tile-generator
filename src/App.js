@@ -31,7 +31,8 @@ class App extends React.Component {
       // Default palette, if one is not provided via options.
       palette: getPalette(0),
       // Transparent 1px gif so we don't show a broken image
-      currentTileImg: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+      currentTileImg: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+      builtTileImages: {}
     }
 
     // NOTE: This logic is almost-duplicated in the reRandomize method
@@ -56,7 +57,10 @@ class App extends React.Component {
           this.state.tileProps[t][opt.name] = val;
         }
       });
+      this.state.builtTileImages[t] = null;
+      this.generateTileImage(t);
     });
+
   }
 
   // Generate the image as soon as this is rendered (else we'll call setState too early)
@@ -87,23 +91,31 @@ class App extends React.Component {
     this.setState(newState, this.reloadImage);
   };
 
-  // Redraw the image based on current state.
-  async getCurrentTileImage() {
+  async generateTileImage(tileType, force = false) {
     let palette = this.state.palette;
-    if (this.state.tileProps[this.state.tileType].Palette) {
-      palette = getPalette(this.state.tileProps[this.state.tileType].Palette);
+    if (this.state.tileProps[tileType].Palette) {
+      palette = getPalette(this.state.tileProps[tileType].Palette);
     }
-    return await ImageGenerator.generateImage(this.state.tileType, this.state.tileProps[this.state.tileType], palette);
+    if (this.state.builtTileImages[tileType] === null || force) {
+      this.state.builtTileImages[tileType] = await ImageGenerator.generateImage(tileType, this.state.tileProps[tileType], palette);
+    }
+    return this.state.builtTileImages[tileType];
+
+  }
+
+  // Redraw the image based on current state.
+  async getCurrentTileImage(force = false) {
+    return await this.generateTileImage(this.state.tileType, force);
   }
 
   // Rebuild the image shown on the page from available settings.
-  async reloadImage() {
-    this.setState({currentTileImg: await this.getCurrentTileImage()});
+  async reloadImage(force = true) {
+    this.setState({currentTileImg: await this.getCurrentTileImage(force)});
   }
 
   // Helper function to do exactly what it says. Regenerates the image when it's done.
   updateTileType(event) {
-    this.setState({tileType: event.target.value}, this.reloadImage);
+    this.setState({tileType: event.target.value}, () => this.reloadImage(false));
   }
 
   // Helper to update state values from the various components that we support.
@@ -139,7 +151,7 @@ class App extends React.Component {
               <SlButton onClick={() => this.reRandomize()}>Randomize Settings</SlButton>
             </SlTooltip>
             <SlTooltip content="Regenerate tile image with the current settings">
-              <SlButton onClick={() => this.reloadImage()}>Regenerate</SlButton>
+              <SlButton onClick={() => this.reloadImage(true)}>Regenerate</SlButton>
             </SlTooltip>
           </div>
 
