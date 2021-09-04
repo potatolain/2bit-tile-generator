@@ -33,6 +33,8 @@ jobs:
         git config --global user.email chris@cpprograms.net
         git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
         export NPM_PACKAGE_VERSION=$(node -e "console.info(require('./package.json').version)")
+        export REACT_APP_VERSION=$NPM_PACKAGE_VERSION
+        echo "Going to deploy version $NPM_PACKAGE_VERSION $REACT_APP_VERSION"
         npm run build
         npx gh-pages -d build
       env:
