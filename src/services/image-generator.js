@@ -67,6 +67,9 @@ export default class ImageGenerator {
           case 'ladder':
             ImageGenerator.drawLadder(image, tileOpt, palette);
             break;
+          case 'stairs':
+            ImageGenerator.drawStairs(image, tileOpt, palette);
+            break;
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
         }
@@ -393,6 +396,21 @@ export default class ImageGenerator {
   static async drawLadder(image, tileOpt, palette) {
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
       if (y % (tileOpt['Step Width']+1) === 0 || x < tileOpt['Border Width'] || x > (image.bitmap.width - tileOpt['Border Width'] - 1)) {
+        image.setPixelColor(palette[tileOpt['Separator Color']], x, y);
+      } else {
+        image.setPixelColor(palette[tileOpt['Step Color']], x, y);
+      }
+    })
+  }
+
+  static async drawStairs(image, tileOpt, palette) {
+    image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      let stepHeight = Math.floor((x-1) / tileOpt['Step Width']) * tileOpt['Step Height'];
+      if (
+        x % (tileOpt['Step Width']+1) === 0 || 
+        y < tileOpt['Border Width'] +  stepHeight || 
+        y > (image.bitmap.width - tileOpt['Border Width'] - 1)
+      ) {
         image.setPixelColor(palette[tileOpt['Separator Color']], x, y);
       } else {
         image.setPixelColor(palette[tileOpt['Step Color']], x, y);

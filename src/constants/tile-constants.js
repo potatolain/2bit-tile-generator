@@ -1,3 +1,6 @@
+export const IMAGE_WIDTH = 16;
+export const IMAGE_HEIGHT = 16;
+
 export const AVAILABLE_TILE_TYPES = [
     'block',
     'brick',
@@ -9,8 +12,8 @@ export const AVAILABLE_TILE_TYPES = [
     'lava', 
     'rock', 
     'sand',
+    'stairs',
     'water',
-    // TODO: Stairs
   ];
 
   export const DEFAULT_TILE_TYPE = 'block';
@@ -26,7 +29,8 @@ export const AVAILABLE_TILE_TYPES = [
     block: 3,
     sand: 0,
     bridge: 0,
-    ladder: 0
+    ladder: 0,
+    stairs: 0
   };
   
   export const TILE_NAMES = {
@@ -40,7 +44,8 @@ export const AVAILABLE_TILE_TYPES = [
     plant: 'Bush',
     sand: 'Sand',
     bridge: 'Bridge',
-    ladder: 'Ladder'
+    ladder: 'Ladder',
+    stairs: 'Stairs'
   }
 
   export const TILE_PREVIEW_IDS = {
@@ -98,6 +103,11 @@ export const AVAILABLE_TILE_TYPES = [
       'rock', 'ladder', 'rock',
       'rock', 'ladder', 'rock',
       'grass', 'grass', 'grass'
+    ],
+    'stairs': [
+      'grass', 'grass', 'grass',
+      'grass', 'stairs', 'grass',
+      'grass', 'grass', 'grass',
     ]
   }
   
@@ -169,9 +179,16 @@ export const AVAILABLE_TILE_TYPES = [
       {name: 'Border Width', min: 0, max: 2, type: 'range', defaultValue: 1},
       {name: 'Step Color', type: 'color', defaultValue: 3},
       {name: 'Separator Color', type: 'color', defaultValue: 1},
-    ]
+    ],
+    stairs: [
+      {name: 'Palette', type: 'palette', defaultValue: 'NES Default Red'},
+      {name: 'Step Width', min: 3, max: 9, type: 'range', step: 2, defaultValue: 7},
+      {name: 'Step Height', min: 1, max: 3, type: 'range'},
+      {name: 'Border Width', min: 0, max: 2, type: 'range', defaultValue: 1},
+      {name: 'Step Color', type: 'color', defaultValue: 1},
+      {name: 'Separator Color', type: 'color', defaultValue: 0},
+    ],
+
 
   };
   
-  export const IMAGE_WIDTH = 16;
-  export const IMAGE_HEIGHT = 16;

@@ -1,5 +1,9 @@
 # Change History
 
+## 1.1.5
+
+* Add Stairs as a tile type
+
 ## 1.1.4 
 
 * Change tiled preview style based on the type of image being used, so ladder looks like a ladder, etc
