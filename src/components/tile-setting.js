@@ -78,7 +78,7 @@ export default class TileSetting extends React.Component {
                   onSlChange={e => e.target.checked ? this.updateTileState(this.tileTypeId, setting.name, n) : null}
                 >
                   Color {n+1} 
-                  <PaletteColorPreview color={this.state.palette[n].toString(16).padStart(8, '0')}></PaletteColorPreview>
+                  <PaletteColorPreview color={getPalette(this.state.tileProps[this.tileTypeId]['Palette'])[n].toString(16).padStart(8, '0')}></PaletteColorPreview>
                 </SlRadio>
             })}
           </SlRadioGroup>
