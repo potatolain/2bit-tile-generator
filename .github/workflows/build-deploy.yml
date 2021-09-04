@@ -22,7 +22,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: npm run build --if-present
     # No tests of value yet, so don't bother spinning them up
     # - run: npm test
 
@@ -35,7 +34,7 @@ jobs:
         export NPM_PACKAGE_VERSION=$(node -e "console.info(require('./package.json').version)")
         export REACT_APP_VERSION=$NPM_PACKAGE_VERSION
         echo "Going to deploy version $NPM_PACKAGE_VERSION $REACT_APP_VERSION"
-        npm run build
+        npm run build-gh
         npx gh-pages -d build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
