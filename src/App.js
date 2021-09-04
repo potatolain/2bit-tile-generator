@@ -133,8 +133,6 @@ class App extends React.Component {
           <h1>2Bit Tile Generator</h1>
         </header>
         <section>
-          <p>
-          </p>
 
           <div className="control-bar">
             <SlTooltip content="Randomize the settings for all tiles.">

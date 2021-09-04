@@ -23,6 +23,18 @@
   width: 50%;
   padding: 16px;
 }
+
+@media (max-width: 500px) {
+  .App .configurator {
+    flex-direction: column-reverse;
+  }
+  .App .configurator > .left, .App .configurator > .right {
+    width: calc(100% - 54px);
+    margin: 10px auto;
+    flex-grow: 1;
+  }
+}
+
 .App .configurator > div, .App .control-bar, footer {
   flex-grow: 1;
   border: 1px solid var(--border-color);
