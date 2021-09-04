@@ -41,6 +41,64 @@ export const AVAILABLE_TILE_TYPES = [
     bridge: 'Bridge',
     ladder: 'Ladder'
   }
+
+  export const TILE_PREVIEW_IDS = {
+    grass: [ 
+      'grass', 'grass', 'grass', 
+      'grass', 'grass', 'grass', 
+      'grass', 'grass', 'grass',
+    ],
+    water: [
+      'water', 'water', 'water',
+      'water', 'water', 'water',
+      'water', 'water', 'water',
+    ],
+    lava: [
+      'sand', 'lava', 'lava',
+      'sand', 'lava', 'lava',
+      'sand', 'lava', 'lava',
+    ],
+    block: [
+      'block', 'block', 'block',
+      'block', 'grass', 'grass',
+      'block', 'grass', 'grass',
+    ],
+    brick: [
+      'brick', 'brick', 'brick',
+      'brick', 'brick', 'brick',
+      'grass', 'grass', 'grass', 
+    ],
+    rock: [
+      'rock', 'rock', 'rock',
+      'rock', 'rock', 'rock',
+      'rock', 'rock', 'rock',
+    ],
+    hole: [
+      'grass', 'grass', 'grass',
+      'grass', 'hole', 'grass',
+      'grass', 'grass', 'grass',
+    ],
+    plant: [
+      'grass', 'grass', 'grass',
+      'grass', 'plant', 'grass',
+      'grass', 'grass', 'grass',
+    ],
+    sand: [
+      'sand', 'sand', 'sand',
+      'sand', 'sand', 'sand',
+      'sand', 'sand', 'sand',
+    ],
+    bridge: [
+      'water', 'water', 'water',
+      'bridge', 'bridge', 'bridge',
+      'water', 'water', 'water',
+    ],
+    'ladder': [
+      'rock', 'ladder', 'rock',
+      'rock', 'ladder', 'rock',
+      'grass', 'grass', 'grass'
+    ]
+  }
   
   export const TILE_OPTIONS = {
     grass: [

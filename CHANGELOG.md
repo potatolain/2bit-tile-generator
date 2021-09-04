@@ -1,5 +1,9 @@
 # Change History
 
+## 1.1.4 
+
+* Change tiled preview style based on the type of image being used, so ladder looks like a ladder, etc
+
 ## 1.1.3
 
 * Add new tile type: Bridge

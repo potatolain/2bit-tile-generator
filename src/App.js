@@ -180,7 +180,7 @@ class App extends React.Component {
               <h4>Single</h4>
               <img className="tile-preview" alt="Tile Preview" src={this.state.currentTileImg}></img>
               <h4>Tiled</h4>
-              <TiledImage src={this.state.currentTileImg} size={3}></TiledImage>
+              <TiledImage tileId={this.state.tileType} tileImages={this.state.builtTileImages}></TiledImage>
               <div className="dl-bar">
                 <SlButton href={this.state.currentTileImg} download={this.state.tileType + '.png'}>Download</SlButton>
               </div>
