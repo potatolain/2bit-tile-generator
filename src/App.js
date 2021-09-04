@@ -147,7 +147,7 @@ class App extends React.Component {
 
     // Force a download, the new old-fashioned way
     let a = document.createElement("a");
-    a.href = "data:" + img; 
+    a.href = img; 
     a.download = "Tileset.png";
     a.click();
   }

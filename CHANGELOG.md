@@ -1,5 +1,9 @@
 # Change History
 
+## 1.1.1 
+
+* Fix a few ios/mobile bugs
+
 ## 1.1.0
 
 * Store current tile image between tabs, so it does not change unexpectedly while you edit other files
