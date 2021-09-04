@@ -194,6 +194,7 @@ class App extends React.Component {
             <a href="https://twitter.com/cppchriscpp" target="_blank">@cppchriscpp</a>
           </p>
           <p>Wanna see the other stuff I do? Check out <a href="https://cpprograms.net" target="_blank">cpprograms.net</a>.</p>
+          <p className="version">version: {process.env.REACT_APP_VERSION}</p>
         </footer>
       </div>
     );
