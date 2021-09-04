@@ -5,6 +5,7 @@ export const AVAILABLE_TILE_TYPES = [
     'plant', // Aka "bush"
     'grass', 
     'hole',
+    'ladder',
     'lava', 
     'rock', 
     'sand',
@@ -23,7 +24,8 @@ export const AVAILABLE_TILE_TYPES = [
     plant: 3,
     block: 3,
     sand: 0,
-    bridge: 0
+    bridge: 0,
+    ladder: 0
   };
   
   export const TILE_NAMES = {
@@ -36,7 +38,8 @@ export const AVAILABLE_TILE_TYPES = [
     hole: 'Hole / Gap',
     plant: 'Bush',
     sand: 'Sand',
-    bridge: 'Bridge'
+    bridge: 'Bridge',
+    ladder: 'Ladder'
   }
   
   export const TILE_OPTIONS = {
@@ -100,7 +103,15 @@ export const AVAILABLE_TILE_TYPES = [
       {name: 'Border Width', min: 0, max: 2, type: 'range', defaultValue: 1},
       {name: 'Board Color', type: 'color', defaultValue: 1},
       {name: 'Separator Color', type: 'color', defaultValue: 0},
+    ],
+    ladder: [
+      {name: 'Palette', type: 'palette', defaultValue: 'NES Default Blue'},
+      {name: 'Step Width', min: 3, max: 9, type: 'range', step: 2, defaultValue: 3},
+      {name: 'Border Width', min: 0, max: 2, type: 'range', defaultValue: 1},
+      {name: 'Step Color', type: 'color', defaultValue: 3},
+      {name: 'Separator Color', type: 'color', defaultValue: 1},
     ]
+
   };
   
   export const IMAGE_WIDTH = 16;

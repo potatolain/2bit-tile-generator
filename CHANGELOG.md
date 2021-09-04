@@ -3,6 +3,7 @@
 ## 1.1.3
 
 * Add new tile type: Bridge
+* Add new tile type: Ladder
 * Fix bug with color of options
 
 ## 1.1.2 
