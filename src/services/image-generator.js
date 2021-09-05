@@ -29,46 +29,46 @@ export default class ImageGenerator {
   static generateImage(tileType, tileOpt, palette) {
     // Jimp isn't super promise friendly - technically it works but it's pretty sketchy at times. Wrap this instead.
     return new Promise((resolve, reject) =>{
-      new Jimp(IMAGE_WIDTH, IMAGE_HEIGHT, palette[TILE_BACKGROUND_COLORS[tileType]], (err, image) =>{
+      new Jimp(IMAGE_WIDTH, IMAGE_HEIGHT, palette[TILE_BACKGROUND_COLORS[tileType]], async (err, image) =>{
         if (err) { reject(err); }
 
         // Big, kind of ugly switch statement for each of our available tile types, determining how to draw each one.
         switch (tileType) {
           case 'grass': 
-            ImageGenerator.drawGrass(image, tileOpt, palette);
+          await ImageGenerator.drawGrass(image, tileOpt, palette);
             break;
           case 'water':
-            ImageGenerator.drawWater(image, tileOpt, palette);
+            await ImageGenerator.drawWater(image, tileOpt, palette);
             break;
           case 'brick':
-            ImageGenerator.drawBrick(image, tileOpt, palette);
+            await ImageGenerator.drawBrick(image, tileOpt, palette);
             break;
           case 'block':
-            ImageGenerator.drawBlock(image, tileOpt, palette);
+            await ImageGenerator.drawBlock(image, tileOpt, palette);
             break;
           case 'hole':
-            ImageGenerator.drawHole(image, tileOpt, palette);
+            await ImageGenerator.drawHole(image, tileOpt, palette);
             break;
           case 'plant':
-            ImageGenerator.drawPlant(image, tileOpt, palette);
+            await ImageGenerator.drawPlant(image, tileOpt, palette);
             break;
           case 'rock':
-            ImageGenerator.drawRock(image, tileOpt, palette);
+            await ImageGenerator.drawRock(image, tileOpt, palette);
             break;
           case 'lava':
-            ImageGenerator.drawLava(image, tileOpt, palette);
+            await ImageGenerator.drawLava(image, tileOpt, palette);
             break;
           case 'sand':
-            ImageGenerator.drawSand(image, tileOpt, palette);
+            await ImageGenerator.drawSand(image, tileOpt, palette);
             break;
           case 'bridge':
-            ImageGenerator.drawBridge(image, tileOpt, palette);
+            await ImageGenerator.drawBridge(image, tileOpt, palette);
             break;
           case 'ladder':
-            ImageGenerator.drawLadder(image, tileOpt, palette);
+            await ImageGenerator.drawLadder(image, tileOpt, palette);
             break;
           case 'stairs':
-            ImageGenerator.drawStairs(image, tileOpt, palette);
+            await ImageGenerator.drawStairs(image, tileOpt, palette);
             break;
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
@@ -293,24 +293,27 @@ export default class ImageGenerator {
     }
   }
 
-  static drawRock(image, tileOpt, palette) {
+  static async drawRock(image, tileOpt, palette) {
+
+    // Create a copy for us to play with, so we can mess with location
+    const rockImg = await Jimp.read(image);
 
     const r = tileOpt['Rock Size'];
-    const x = 8, y = image.bitmap.height - (tileOpt['Rock Size'] - 2);
+    const x = 8, y = rockImg.bitmap.height - (tileOpt['Rock Size'] - 2);
     let angle, x1, y1;
     for (var i = 0; i < 360; i++) {
       angle = i;
       x1 = r * Math.cos(angle * Math.PI / 180);
       y1 = r * Math.sin(angle * Math.PI / 180);
 
-      image.setPixelColor(palette[0], Math.round(x + x1), Math.round(y + y1));
+      rockImg.setPixelColor(palette[0], Math.round(x + x1), Math.round(y + y1));
     }
 
     // terribly simple color filling algorithm
-    for (var imgY = 0; imgY < image.bitmap.height; imgY++) {
+    for (var imgY = 0; imgY < rockImg.bitmap.height; imgY++) {
       let hitLeft = false, hitMid = false, hitRight = false, colorCount = 0;
-      for (var imgX = 0; imgX < image.bitmap.width; imgX++) {
-        if (image.getPixelColor(imgX, imgY) === palette[0]) {
+      for (var imgX = 0; imgX < rockImg.bitmap.width; imgX++) {
+        if (rockImg.getPixelColor(imgX, imgY) === palette[0]) {
           colorCount++;
           if (!hitLeft) {
             hitLeft = true;
@@ -318,22 +321,25 @@ export default class ImageGenerator {
             hitRight = true;
           }
         } else {
-          if (hitLeft && image.getPixelColor(imgX, imgY) === palette[3]) {
+          if (hitLeft && rockImg.getPixelColor(imgX, imgY) === palette[3]) {
             hitMid = true;
           }
           if (hitMid && !hitRight && colorCount < 5) { // Must be on the inside of the circle
             if ((imgX - imgY) < r - Math.floor(r/1.2)) {
-              image.setPixelColor(palette[tileOpt['Rock Color']], imgX, imgY);
+              rockImg.setPixelColor(palette[tileOpt['Rock Color']], imgX, imgY);
             } else {
-              image.setPixelColor(palette[tileOpt['Rock Highlight Color']], imgX, imgY);
+              rockImg.setPixelColor(palette[tileOpt['Rock Highlight Color']], imgX, imgY);
             }
           }
         }
       }
     }
+
+    // okay, the image is done, but not really centered how we'd like. Blit the image onto itself?
+    image.blit(rockImg, 0, -1 - Math.floor((image.bitmap.height / 2) - (tileOpt['Rock Size'])));
   }
 
-  static drawLava(image, tileOpt, palette) {
+  static async drawLava(image, tileOpt, palette) {
     const frequency = (tileOpt['Frequency'] / 100),
       offset = tileOpt['Offset'],
       waveWidth = tileOpt['Wave Width'];
@@ -358,7 +364,7 @@ export default class ImageGenerator {
     }
   }
 
-  static drawSand(image, tileOpt, palette) {
+  static async drawSand(image, tileOpt, palette) {
     const frequency = (tileOpt['Frequency'] / 100),
       offset = tileOpt['Offset'],
       waveWidth = tileOpt['Wave Width'];

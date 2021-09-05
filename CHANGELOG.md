@@ -1,5 +1,9 @@
 # Change History
 
+## 1.1.6
+
+* Center the rock tile to make it look nicer
+
 ## 1.1.5
 
 * Add Stairs as a tile type
