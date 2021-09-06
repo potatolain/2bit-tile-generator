@@ -160,7 +160,7 @@ export const TILE_OPTIONS = {
     {name: 'Height', min: 2, max: 3, type: 'range'}
   ],
   hole: [
-    {name: 'Palette', type: 'palette', defaultValue: 'Gameboy'},
+    {name: 'Palette', type: 'palette', defaultValue: 'NEs Default Yellow'},
     {name: 'Hole Size', min: 6, max: 14, type: 'range', step: 2},
     {name: 'Fuzz Area', min: 1, max: 2, type: 'range', defaultValue: 1}
   ],
