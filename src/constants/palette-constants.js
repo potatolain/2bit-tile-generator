@@ -16,6 +16,15 @@ export const paletteData = {
     'NES Default Yellow': [0x000000ff, 0x666600ff, 0xbbaa00ff, 0xeedd88ff]
 }
 
+// Used to build up an actual NES palette, for download
+export const nesPaletteData = {
+    'Gameboy': [0x0f, 0x00, 0x10, 0x30],
+    'NES Default Blue': [0x0f, 0x01, 0x21, 0x31],
+    'NES Default Red': [0x0f, 0x06, 0x16, 0x26],
+    'NES Default Green': [0x0f, 0x09, 0x19, 0x29],
+    'NES Default Yellow': [0x0f, 0x08, 0x18, 0x28]
+}
+
 export const getPalette = (idOrName) => {
     if (typeof idOrName === 'string') {
         return paletteData[idOrName];

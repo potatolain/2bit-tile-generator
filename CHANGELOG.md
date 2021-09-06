@@ -1,5 +1,9 @@
 # Change History
 
+## 1.2.1
+
+* Allow downloading NES data formats, for use directly in NES games. (Or editing in NESST, etc)
+
 ## 1.2.0
 
 * Separated out tile and block to two separate generators

@@ -1,4 +1,5 @@
 import Jimp from 'jimp/es';
+import { paletteData } from '../constants/palette-constants';
 
 import { TILE_BACKGROUND_COLORS, IMAGE_WIDTH, IMAGE_HEIGHT, AVAILABLE_TILE_TYPES, TILE_PREVIEW_MAP } from '../constants/tile-constants';
 
@@ -426,6 +427,11 @@ export default class ImageGenerator {
   }
 
 
+  static async imageFromBase64(thisB64) {
+    thisB64 = thisB64.substr(thisB64.indexOf(',')+1);
+    return await Jimp.read(Buffer.from(thisB64, 'base64'));
+  }
+
   static generateFullSet(imageState) {
     return new Promise((resolve, reject) =>{
       new Jimp(IMAGE_WIDTH * (AVAILABLE_TILE_TYPES.length+1), IMAGE_HEIGHT, 0xffffffff, (err, image) =>{
@@ -436,9 +442,7 @@ export default class ImageGenerator {
 
           // Loop over each available image type
           for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++ ) {
-            let thisB64 = imageState[AVAILABLE_TILE_TYPES[i]];
-            thisB64 = thisB64.substr(thisB64.indexOf(',')+1);
-            let thisImg = await Jimp.read(Buffer.from(thisB64, 'base64'));
+            let thisImg = await this.imageFromBase64(imageState[AVAILABLE_TILE_TYPES[i]]);
             await image.blit(thisImg, (i+1)*IMAGE_WIDTH, 0);
           }
 
@@ -468,7 +472,7 @@ export default class ImageGenerator {
           for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++) {
             let thisB64 = imageState[AVAILABLE_TILE_TYPES[i]];
             thisB64 = thisB64.substr(thisB64.indexOf(',')+1);
-            tileImages[AVAILABLE_TILE_TYPES[i]] = await Jimp.read(Buffer.from(thisB64, 'base64'));
+            tileImages[AVAILABLE_TILE_TYPES[i]] = await this.imageFromBase64(imageState[AVAILABLE_TILE_TYPES[i]]);
             drawState[AVAILABLE_TILE_TYPES[i]] = false;
           }
 
@@ -492,6 +496,137 @@ export default class ImageGenerator {
       });
 
     });
+
+  }
+
+  static async generateNesPatternTables(imageState, tileProps, organizeIntoBlocks) {
+    let ppuData = [
+    ];
+
+    // Loop over every tile, and convert it to NES binary format
+    for (var i = 0; i < AVAILABLE_TILE_TYPES.length; i++) {
+      const tileType = AVAILABLE_TILE_TYPES[i],
+        tile = await this.imageFromBase64(imageState[tileType]),
+        tileColorData = new Array(tile.bitmap.width * tile.bitmap.height),
+        paletteColors = paletteData[tileProps[tileType].Palette];
+
+      // Loop over all pixels in this tile, and grab the color
+      tile.scan(0, 0, tile.bitmap.width, tile.bitmap.height, (x, y) => {
+        const color = tile.getPixelColor(x, y);
+        // Then drop the 2-bit value of the color into our array, for later use.
+        tileColorData[x + (y * tile.bitmap.width)] = paletteColors.indexOf(color);
+      });
+
+      // Separate out the two bit values we care about for each pixel, allowing us to build bitplanes
+      let bits0 = tileColorData.map (x => x & 0x01),
+        bits1 = tileColorData.map(x => (x & 0x02) >> 1);
+      
+      // This is exceedingly gross and poorly documented. It's basically forcing this: https://wiki.nesdev.com/w/index.php?title=PPU_pattern_tables
+      // Build up two bitplanes for each tile, then, pixel-by-pixel, build them up and reassemble.
+
+      // First build up multiple bitplanes, a left and a right for each 8x8 pixel tile in this thing. tl, tr, bl, br
+      let thisTileBp1a = [], thisTileBp2a = [], thisTileBp1b = [], thisTileBp2b = [],
+        thisTileBp3a = [], thisTileBp3b = [], thisTileBp4a = [], thisTileBp4b = [];
+      
+      // Loop over each of the 4 bitplanes (this feels weird because it is)
+      for (let bitplaneNum = 0; bitplaneNum < 4; bitplaneNum++) {
+
+        // Loop over each row in this tile/bitplane
+        for (let j = 0; j < 8; j++) {
+
+          // In our first pass, add a 0 to all planes, so we can do math to them
+          if (bitplaneNum === 0) {
+            thisTileBp1a.push(0);
+            thisTileBp2a.push(0);
+            thisTileBp3a.push(0);
+            thisTileBp4a.push(0);
+            thisTileBp1b.push(0);
+            thisTileBp2b.push(0);
+            thisTileBp3b.push(0);
+            thisTileBp4b.push(0);
+          }
+
+          // Loop over every pixel in the row, assembling each pixel into its left and right bit
+          for (let k = 0; k < 8; k++) {
+            if (bitplaneNum === 0) {
+              thisTileBp1a[j] += bits0[(j * tile.bitmap.width) + k] << (7 - k);
+              thisTileBp1b[j] += bits1[(j * tile.bitmap.width) + k] << (7 - k);
+            } else if (bitplaneNum === 1) {
+              thisTileBp2a[j] += bits0[(j * tile.bitmap.width) + k + 8] << (7 - k);
+              thisTileBp2b[j] += bits1[(j * tile.bitmap.width) + k + 8] << (7 - k);
+            } else if (bitplaneNum === 2) {
+              thisTileBp3a[j] += bits0[(j * tile.bitmap.width) + k + 128] << (7 - k);
+              thisTileBp3b[j] += bits1[(j * tile.bitmap.width) + k + 128] << (7 - k);
+            } else {
+              thisTileBp4a[j] += bits0[(j * tile.bitmap.width) + k + 128 + 8] << (7 - k);
+              thisTileBp4b[j] += bits1[(j * tile.bitmap.width) + k + 128 + 8] << (7 - k);
+            }
+          }
+        }
+      }
+
+      // Add each bitplane to the tile, in the correct order. 
+      // At this point, we just put all the tiles in order, so you'll get top left, top right, bottom left, bottom right all in a row
+      ppuData = [
+        ...ppuData,
+        ...thisTileBp1a,
+        ...thisTileBp1b,
+        ...thisTileBp2a,
+        ...thisTileBp2b,
+        ...thisTileBp3a,
+        ...thisTileBp3b,
+        ...thisTileBp4a,
+        ...thisTileBp4b
+      ];
+    }
+    
+    // Prepend a blank tile, with nothing in it - 64 bytes (4 16 byte 8px tiles)
+    ppuData = [
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      ...ppuData
+    ]
+
+    // The data is currently in a linear format, where each (16 byte) block is in sequence
+    // not pretty, but easy to work with in some games. If the user wants that, sweet!
+    if (!organizeIntoBlocks) {
+      return new Uint8Array(ppuData);
+    }
+
+    // Okay, we have a little work to do to organize it. NES chr files are 16 by 16, 8px tiles, where each tile 
+    // takes up 16 bytes. We have to break up by tile. Note we have to add the extra tile from above into the count.
+    
+    // Build up a new array - just make it the full size of a pattern table on the NES for ease of use
+    let organizedArray = new Array(4096).fill(0);
+    // loop over all tiles (including our blank one)
+    for (let i = 0; i < AVAILABLE_TILE_TYPES.length+1; i++) {
+
+      // Determine where this tile will fall in our organized map - 2 8x8 tiles on one row, two 8x8 tiles on the next.
+      const x = i % 8,
+        y = Math.floor(i / 8),
+        // Get our position within this new map
+        position = (16/*tile size (bytes)*/ * 16/*row width, in nes tiles*/ * 2/*rows per metatile*/ * y) + (16 * x * 2),
+        // Find the position in the original array
+        originalPosition = (i * 4) * 16;
+
+      // Copy the top 32 bytes (2 tiles) into their new home
+      for (let j = 0; j < 32; j++) {
+        organizedArray[position+j] = ppuData[originalPosition+j];
+      }
+      // Copy the bottom 32 bytes into their new home as well)
+      for (let j = 0; j < 32; j++) {
+        organizedArray[position + (16/* tile size (bytes)*/ * 16 /*row width*/) + j] = ppuData[originalPosition + j + 32];
+      }
+    }
+
+    // Okay, we're finally done!
+    return new Uint8Array(organizedArray);
 
   }
 }

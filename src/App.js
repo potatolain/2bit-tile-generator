@@ -14,6 +14,7 @@ import ImageGenerator from './services/image-generator';
 import TileSetting from './components/tile-setting';
 import TiledImage from './components/tiled-image';
 import MapPreviewButton from './components/map-preview-button';
+import DownloadDropdown from './components/download-dropdown';
 
 // Constants
 import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } from './constants/tile-constants';
@@ -157,22 +158,6 @@ class App extends React.Component {
     }, this.reloadImage);
   }
 
-  async downloadAll() {
-    // First, loop over all images and make sure we've generated them
-    for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++) {
-      await this.generateTileImage(AVAILABLE_TILE_TYPES[i]);
-    }
-
-    const img = await ImageGenerator.generateFullSet(this.state.builtTileImages);
-
-    // Force a download, the new old-fashioned way
-    let a = document.createElement("a");
-    a.href = img; 
-    a.download = "Tileset.png";
-    a.click();
-  }
-
-
   render() {
     return (
       <div className="App">
@@ -183,9 +168,8 @@ class App extends React.Component {
 
           <div className="control-bar">
             <MapPreviewButton tileImages={this.state.builtTileImages}></MapPreviewButton>
-            <SlTooltip content="Download a single png file with all tiles">
-              <SlButton onClick={() => this.downloadAll()}>Download Tile Strip</SlButton>
-            </SlTooltip>
+            <DownloadDropdown tileImages={this.state.builtTileImages} tileProps={this.state.tileProps}></DownloadDropdown>
+
             <SlTooltip content="Randomize the settings for all tiles.">
               <SlButton onClick={() => this.reRandomize()}>Randomize Settings</SlButton>
             </SlTooltip>
