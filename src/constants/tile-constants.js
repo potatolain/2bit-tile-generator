@@ -83,9 +83,9 @@ export const TILE_PREVIEW_IDS = {
     'sand', 'sand', 'sand',
   ],
   hole: [
-    'grass', 'grass', 'grass',
-    'grass', 'hole', 'grass',
-    'grass', 'grass', 'grass',
+    'sand', 'sand', 'sand',
+    'sand', 'hole', 'sand',
+    'sand', 'sand', 'sand',
   ],
   plant: [
     'grass', 'grass', 'grass',
@@ -160,7 +160,7 @@ export const TILE_OPTIONS = {
     {name: 'Height', min: 2, max: 3, type: 'range'}
   ],
   hole: [
-    {name: 'Palette', type: 'palette', defaultValue: 'NEs Default Yellow'},
+    {name: 'Palette', type: 'palette', defaultValue: 'NES Default Yellow'},
     {name: 'Hole Size', min: 6, max: 14, type: 'range', step: 2},
     {name: 'Fuzz Area', min: 1, max: 2, type: 'range', defaultValue: 1}
   ],
