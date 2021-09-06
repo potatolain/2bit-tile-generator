@@ -1,0 +1,9 @@
+.map-preview-dialog > img {
+  image-rendering: pixelated;
+  transform-origin: top left;
+  width: 384px;
+}
+    
+.map-preview-dialog {
+  text-align: center;
+}

@@ -5,9 +5,8 @@ import { TILE_PREVIEW_IDS } from '../constants/tile-constants';
 
 // Renders an image in a tiled pattern, sizeXsize wide
 // Props:
-// - 
-// - src: The image src to use. (can be base64, or whatever)
-// - size: The number of images to tile together. A value of 3 would render a 3x3 grid.
+// - tileId: The id of the tile to render, looked up from constants
+// - tileImages: Collection of images to use for the given ids
 export default class TiledImage extends React.Component {
   render() {
     const allSrc = TILE_PREVIEW_IDS[this.props.tileId].map(id => this.props.tileImages[id]);

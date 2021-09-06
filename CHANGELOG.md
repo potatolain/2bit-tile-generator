@@ -1,5 +1,12 @@
 # Change History
 
+## 1.2.0
+
+* Separated out tile and block to two separate generators
+* Added "preview as map" feature to show all tiles at once
+* Store your previously edited tile, so it restores on refresh
+* Show tile previews in the tile type dropdown
+
 ## 1.1.6
 
 * Center the rock tile to make it look nicer

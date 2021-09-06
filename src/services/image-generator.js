@@ -1,6 +1,6 @@
 import Jimp from 'jimp/es';
 
-import { TILE_BACKGROUND_COLORS, IMAGE_WIDTH, IMAGE_HEIGHT, AVAILABLE_TILE_TYPES } from '../constants/tile-constants';
+import { TILE_BACKGROUND_COLORS, IMAGE_WIDTH, IMAGE_HEIGHT, AVAILABLE_TILE_TYPES, TILE_PREVIEW_MAP } from '../constants/tile-constants';
 
 // Because js treats % as a remainder instead of modulus... because, sigh, programming languages were a mistake.
 function modulus(a, b) {
@@ -43,6 +43,7 @@ export default class ImageGenerator {
           case 'brick':
             await ImageGenerator.drawBrick(image, tileOpt, palette);
             break;
+          case 'tile':
           case 'block':
             await ImageGenerator.drawBlock(image, tileOpt, palette);
             break;
@@ -336,7 +337,7 @@ export default class ImageGenerator {
     }
 
     // okay, the image is done, but not really centered how we'd like. Blit the image onto itself?
-    image.blit(rockImg, 0, -1 - Math.floor((image.bitmap.height / 2) - (tileOpt['Rock Size'])));
+    await image.blit(rockImg, 0, -1 - Math.floor((image.bitmap.height / 2) - (tileOpt['Rock Size'])));
   }
 
   static async drawLava(image, tileOpt, palette) {
@@ -425,7 +426,7 @@ export default class ImageGenerator {
   }
 
 
-  static async generateFullSet(imageState) {
+  static generateFullSet(imageState) {
     return new Promise((resolve, reject) =>{
       new Jimp(IMAGE_WIDTH * (AVAILABLE_TILE_TYPES.length+1), IMAGE_HEIGHT, 0xffffffff, (err, image) =>{
         if (err) { reject(err); }
@@ -449,5 +450,48 @@ export default class ImageGenerator {
 
 
     });
+  }
+
+  static generateMapPreview(imageState) {
+    const width = Math.sqrt(TILE_PREVIEW_MAP.length);
+    return new Promise((resolve, reject) =>{
+      // Dealing with Jimp's weird promise quirks (again)
+      new Jimp(IMAGE_WIDTH * width, IMAGE_HEIGHT * width, 0xffffffff, (err, image) =>{
+        if (err) { reject(err); }
+
+        // Force back into async context
+        (async () => {
+
+          // Build up the LUT of actual images, since we should use all of em
+          let tileImages = {};
+          let drawState = {};
+          for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++) {
+            let thisB64 = imageState[AVAILABLE_TILE_TYPES[i]];
+            thisB64 = thisB64.substr(thisB64.indexOf(',')+1);
+            tileImages[AVAILABLE_TILE_TYPES[i]] = await Jimp.read(Buffer.from(thisB64, 'base64'));
+            drawState[AVAILABLE_TILE_TYPES[i]] = false;
+          }
+
+          for (var x = 0; x < width; x++) {
+            for (var y = 0; y < width; y++) {
+              const pos = y*width + x;
+              image.blit(tileImages[TILE_PREVIEW_MAP[pos]], x * IMAGE_WIDTH, y * IMAGE_HEIGHT);
+              drawState[TILE_PREVIEW_MAP[pos]] = true;
+            }
+          }
+
+          // Check which tiles were not drawn, print a warning.
+          const notDrawn = AVAILABLE_TILE_TYPES.filter(a => !drawState[a]);
+          if (notDrawn.length > 0) {
+            console.warn('Some tiles were not included in the preview!', notDrawn.join(', '));
+          }
+
+          return image.getBase64Async('image/png');
+        })().then(resolve, reject);
+
+      });
+
+    });
+
   }
 }

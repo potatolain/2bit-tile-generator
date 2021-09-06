@@ -13,6 +13,7 @@ import ImageGenerator from './services/image-generator';
 // Custom components
 import TileSetting from './components/tile-setting';
 import TiledImage from './components/tiled-image';
+import MapPreviewButton from './components/map-preview-button';
 
 // Constants
 import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } from './constants/tile-constants';
@@ -58,13 +59,26 @@ class App extends React.Component {
         }
       });
       this.state.builtTileImages[t] = null;
-      this.generateTileImage(t);
     });
 
+
+    // Try to retrieve the last tile you were using to restore state
+    try {
+      const lastTileType = localStorage.getItem('2bit-tile-generator__tileType');
+      if (lastTileType !== null) {
+        this.state.tileType = lastTileType;
+      }
+    } catch (e) {
+      console.info('Failed getting information from localStorage, sticking to default', e);
+    }
   }
 
-  // Generate the image as soon as this is rendered (else we'll call setState too early)
-  componentDidMount() {
+  // Generate the images as soon as this is rendered (else we'll call setState too early)
+  async componentDidMount() {
+    for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++) {
+      await this.generateTileImage(AVAILABLE_TILE_TYPES[i], false);
+    }
+
     this.reloadImage();
   }
 
@@ -97,7 +111,12 @@ class App extends React.Component {
       palette = getPalette(this.state.tileProps[tileType].Palette);
     }
     if (this.state.builtTileImages[tileType] === null || force) {
-      this.state.builtTileImages[tileType] = await ImageGenerator.generateImage(tileType, this.state.tileProps[tileType], palette);
+      let res = await ImageGenerator.generateImage(tileType, this.state.tileProps[tileType], palette);
+      this.setState({builtTileImages: {
+        ...this.state.builtTileImages,
+        [tileType]: res
+      }});
+      return res;
     }
     return this.state.builtTileImages[tileType];
 
@@ -116,6 +135,7 @@ class App extends React.Component {
   // Helper function to do exactly what it says. Regenerates the image when it's done.
   updateTileType(event) {
     this.setState({tileType: event.target.value}, () => this.reloadImage(false));
+    localStorage.setItem('2bit-tile-generator__tileType', event.target.value);
   }
 
   // Helper to update state values from the various components that we support.
@@ -162,8 +182,9 @@ class App extends React.Component {
         <section>
 
           <div className="control-bar">
+            <MapPreviewButton tileImages={this.state.builtTileImages}></MapPreviewButton>
             <SlTooltip content="Download a single png file with all tiles">
-              <SlButton onClick={() => this.downloadAll()}>Download All</SlButton>
+              <SlButton onClick={() => this.downloadAll()}>Download Tile Strip</SlButton>
             </SlTooltip>
             <SlTooltip content="Randomize the settings for all tiles.">
               <SlButton onClick={() => this.reRandomize()}>Randomize Settings</SlButton>
@@ -188,8 +209,8 @@ class App extends React.Component {
             <div className="right">
               <h3>Tile Configuration</h3>
               <div className="tile-option">
-                <SlSelect label="Tile Type" value={this.state.tileType} onSlChange={e => this.updateTileType(e)}>
-                  {AVAILABLE_TILE_TYPES.map(a => <SlMenuItem key={a} value={a}>{TILE_NAMES[a]}</SlMenuItem>)}
+                <SlSelect label="Tile Type" value={this.state.tileType} onSlChange={e => this.updateTileType(e)} className="tile-type-select">
+                  {AVAILABLE_TILE_TYPES.map(a => <SlMenuItem key={a} value={a}>{TILE_NAMES[a]} <img alt="" slot="suffix" src={this.state.builtTileImages[a]}></img> </SlMenuItem>)}
                 </SlSelect>
               </div>
 
@@ -206,7 +227,6 @@ class App extends React.Component {
           </div>
         </section>
         <footer>
-          {/* NEXT STEPS: Write a blog post, share on twitter. Also git commit this thing */}
           <p>
             Heavily inspired by <a href="https://0x72.itch.io/2bitcharactergenerator" target="_blank">0x72's 2BitCharactersGenerator</a>. 
             UI powered by <a href="https://shoelace.style/" target="_blank">Shoelace</a>.
