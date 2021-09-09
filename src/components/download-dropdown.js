@@ -53,7 +53,7 @@ export default class MapPreviewButton extends React.Component {
   }
 
   render() {
-    return <div style={{'display': 'inline-block'}}>
+    return <span>
       <SlDropdown>
         <SlButton caret slot="trigger">Download</SlButton>
         <SlMenu>
@@ -63,7 +63,7 @@ export default class MapPreviewButton extends React.Component {
           <SlMenuItem title="Download Default NES Palette file (games, nesst, etc)" onClick={() => this.downloadPalette()}>Download binary palette (.pal)</SlMenuItem>
         </SlMenu>
       </SlDropdown>
-    </div>;
+    </span>;
     
   }
 }

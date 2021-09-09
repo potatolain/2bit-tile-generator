@@ -27,14 +27,14 @@ export default class MapPreviewButton extends React.Component {
 
 
   render() {
-    return <div style={{'display': 'inline-block'}}>
+    return <span>
       <SlTooltip content="Show a preview image using all of the tiles">
         <SlButton onClick={() => this.showDialog()}>Preview as map</SlButton>
       </SlTooltip>
       <SlDialog label="Map Preview" ref={this.imageRef} className="map-preview-dialog">
         <img alt="Map Preview" src={this.state.mapImage}></img>
       </SlDialog>
-    </div>;
+    </span>;
     
   }
 }
