@@ -567,6 +567,7 @@ export default class ImageGenerator {
 
   }
 
+  // This outputs a pattern table usable with the ENS directly, or NES art tools like nesst/nexxt
   static async generateNesPatternTables(imageState, tileProps, organizeIntoBlocks) {
     let ppuData = [
     ];
@@ -589,7 +590,7 @@ export default class ImageGenerator {
       let bits0 = tileColorData.map (x => x & 0x01),
         bits1 = tileColorData.map(x => (x & 0x02) >> 1);
       
-      // This is exceedingly gross and poorly documented. It's basically forcing this: https://wiki.nesdev.com/w/index.php?title=PPU_pattern_tables
+      // This is kind of gross and confusing. It's basically forcing this: https://wiki.nesdev.com/w/index.php?title=PPU_pattern_tables
       // Build up two bitplanes for each tile, then, pixel-by-pixel, build them up and reassemble.
 
       // First build up multiple bitplanes, a left and a right for each 8x8 pixel tile in this thing. tl, tr, bl, br
@@ -670,8 +671,9 @@ export default class ImageGenerator {
     // Okay, we have a little work to do to organize it. NES chr files are 16 by 16, 8px tiles, where each tile 
     // takes up 16 bytes. We have to break up by tile. Note we have to add the extra tile from above into the count.
     
-    // Build up a new array - just make it the full size of a pattern table on the NES for ease of use
+    // Build up a new array - we just supply a full 4kb pattern table to make this simple for ourselves.
     let organizedArray = new Array(4096).fill(0);
+    
     // loop over all tiles (including our blank one)
     for (let i = 0; i < AVAILABLE_TILE_TYPES.length+1; i++) {
 
