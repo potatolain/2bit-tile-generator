@@ -104,6 +104,8 @@ export default class ImageGenerator {
   }
 
   static drawWater(image, tileOpt, palette) {
+
+    // Disabled, this didn't end up looking good, tries to fill in deeper areas in a circle around a random point
     for (let i = 0; i < tileOpt['Deeper Areas']; i++) {
       const {x: originX, y: originY} = getRandomImageCoords(image);
       const depthR = Math.floor(Math.random() * 4) + 3;
@@ -116,17 +118,27 @@ export default class ImageGenerator {
         }
       });
     }
+
+    // Draw lines starting from a random spot on the image
     for (let i = 0; i < tileOpt['Lines']; i++) {
+      // Start position
       const {x: originX, y: originY} = getRandomImageCoords(image);
+      // Determine which direction this line is facing, left/right and up/down
       const xDiff = Math.floor(Math.random() * 2) === 1 ? 1 : -1;
       const yDiff = Math.floor(Math.random() * 2) === 1 ? 1 : -1;
       let x = originX, y = originY;
+      // Set that first pixel manually
       image.setPixelColor(palette[3], x, y);
       x = modulus(x + xDiff, image.bitmap.width);
       y = modulus(y + yDiff, image.bitmap.height);
+      
+      // Repeat this process until we've gone across the full width of the image
       while (x !== originX && y !== originY) {
         image.setPixelColor(palette[3], x, y);
+
+        // Pick whether to shift by x, y, neither or both. (It eventually works out)
         if (Math.random() > 0.3) {
+          // Modulus loops us back over to 0 when we hit the full width
           x = modulus(x + xDiff, image.bitmap.width);
         }
         if (Math.random() > 0.3) {
@@ -134,6 +146,7 @@ export default class ImageGenerator {
         }
 
       }
+      // Set the last pixel that was set up in the while loop
       image.setPixelColor(palette[3], x, y);
     }
 
@@ -142,6 +155,7 @@ export default class ImageGenerator {
   static drawBrick(image, tileOpt, palette) {
     const row1Lines = [];
     const row2Lines = [];
+    // Find where in each row to put the column lines - we have 2 sets, offset by brick width to provide some variation.
     for (var i = 0; i < image.bitmap.width; i++) {
       if (modulus(i+1, tileOpt['Brick Width'] + 1) === 0) {
         row1Lines.push(i);
@@ -150,16 +164,20 @@ export default class ImageGenerator {
       }
     }
 
-    // Fill with bg color to start
     let rowNum = 0;
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
+      // Fill with bg color to start
       image.setPixelColor(palette[tileOpt['Brick Color']], x, y);
 
+      // Color brick with border color if this is a border between bricks
       if (y % (tileOpt['Brick Height'] + 1) === 0) {
         image.setPixelColor(palette[0], x, y);
+
+        // If this is the first pixel in this row, up the row number, so we can decide which column to use
         if (x === 0) { ++rowNum; }
       }
 
+      // If this matches the X for an active column, draw that too
       if (rowNum % 2 === 0) {
         if (row1Lines.indexOf(x) !== -1) {
           image.setPixelColor(palette[0], x, y);
@@ -177,16 +195,22 @@ export default class ImageGenerator {
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
       const tileSize = (10 - tileOpt['Height']) * 2;
 
+      // Draw a diagonal line across the image, with darker color on the bottom half to show shading
       image.setPixelColor(x > (image.bitmap.height - y - 1) ? palette[1] : palette[3], x, y);
 
       
+      // Draw a line across both diagonals, to show where the edges are
+      // NOTE: This also hides some messiness that might be made with the diagonal line above
       if (x === y) {
         image.setPixelColor(palette[2], x, y);
       } else if (x === (image.bitmap.height - y - 1)) {
         image.setPixelColor(palette[1], x, y);
       }
+
+      // This is used to determine the "height" of the block, which is really the square in the middle, and how big it is
       const h = ((image.bitmap.height / 2) - (tileSize / 2));
       
+      // Draw the variable-sized square in the middle
       if (x > h && x < (h + tileSize - 1)) {
         if (y > h && y < (h + tileSize - 1)) {
           image.setPixelColor(palette[2], x, y);
@@ -197,14 +221,19 @@ export default class ImageGenerator {
 
   static drawHole(image, tileOpt, palette) {
     const borderWidth = Math.floor((image.bitmap.width / 2) - (tileOpt['Hole Size'] / 2));
-    const fuzzWidth = tileOpt['Fuzz Area'];
+    // Determine how much space to randomly fill with either bg or hole color
+    const fuzzWidth = tileOpt['Fuzz Area']; 
 
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      // The image currently has a background color that we want, so now we find what parts need to be recolored to black for the hole
+      
+      // Test to make sure we're within he borders of the whole
       if (
         (x < borderWidth || x > (image.bitmap.width - 1 - borderWidth)) ||
         (y < borderWidth || y > (image.bitmap.height - 1 - borderWidth))
       ) {
         
+        // Determine whether we are in the "fuzzy" area on the outside of the hole
         if (
           (x >= (borderWidth - fuzzWidth) && x < borderWidth && (y > borderWidth && y < (image.bitmap.height - 1 - borderWidth))) ||
           (x >= (borderWidth + tileOpt['Hole Size']) && x < (borderWidth + tileOpt['Hole Size'] + fuzzWidth) && (y > borderWidth && y < (image.bitmap.height -1 - borderWidth))) ||
@@ -212,21 +241,19 @@ export default class ImageGenerator {
           (y >= (borderWidth - fuzzWidth) && y < borderWidth && (x > borderWidth && x < (image.bitmap.width - 1 - borderWidth))) ||
           (y >= (borderWidth + tileOpt['Hole Size']) && y < (borderWidth + tileOpt['Hole Size'] + fuzzWidth) && (x > borderWidth && x < (image.bitmap.width -1 - borderWidth)))
         ) {
-          // Bail some of the time to make it "fuzzy"
+          // We're in the fuzzy area, so bail based on rng, causing this pixel to stay as the background color
           if (Math.random() > 0.35) { return; }
         }
+        // If you get here, set the background color to black, the hole color.
         image.setPixelColor(palette[2], x, y);
       }
     });
 
   }
 
-  // NOTE: I really don't like the results of this, it needs a rewrite. Maybe someone can use it, but it feels lackluster at best. 
-  // I'm not sure what else I can really do procedurally, or even non-procedurally. PRs welcome, with either code or even a 16x16 image
-  // and some notes on how we could tweak it. 
   static drawPlant(image, tileOpt, palette) {
 
-    // Draw that circle
+    // Draw a circle around the outside
     const r = tileOpt['Bush Size'];
     const x = 8, y = 10 - Math.floor(tileOpt['Bush Size'] / 2);
     
@@ -239,29 +266,32 @@ export default class ImageGenerator {
       image.setPixelColor(palette[0], Math.round(x + x1), Math.round(y + y1));
     }
 
-    // terribly simple color filling algorithm
+    // Loop over the whole image, row by row,
     for (var imgY = 0; imgY < image.bitmap.height; imgY++) {
+      // Track whether, in this row, we have hit the first border, a pixel of filling, and the right border.
       let hitLeft = false, hitMid = false, hitRight = false, colorCount = 0;
+      // Loop over each pixel
       for (var imgX = 0; imgX < image.bitmap.width; imgX++) {
+        // Check the pixel color, see if it matches the border color (always [0])
         if (image.getPixelColor(imgX, imgY) === palette[0]) {
           colorCount++;
-          if (!hitLeft) {
+          if (!hitLeft) { // If we haven't seen this before, this is the lefthand side
             hitLeft = true;
-          } else if (hitMid) {
+          } else if (hitMid) { // If we have seen this before, and we also have seen middle pixels, this is the end of the bush on this row
             hitRight = true;
           }
-        } else {
-          if (hitLeft && image.getPixelColor(imgX, imgY) === palette[3]) {
+        } else { // Not a border color
+          if (hitLeft && image.getPixelColor(imgX, imgY) === palette[3]) { // If this is filled with background right now, mark it as middle
             hitMid = true;
           }
-          if (hitMid && !hitRight && colorCount < 5) { // Must be on the inside of the circle
+          if (hitMid && !hitRight && colorCount < 5) { // Based on the variables we set above, if we are in the middle of the image, set the color
             image.setPixelColor(palette[tileOpt['Bush Color']], imgX, imgY);
           }
         }
       }
     }
 
-    // Draw small shadow
+    // Draw small shadow near the foot of the plant
     for (let shadowX = x - Math.floor(r/2)+1; shadowX < x + r+1; shadowX++) {
       image.setPixelColor(palette[0], shadowX, y + r + 1);
       if (shadowX < x + r) {
@@ -271,18 +301,25 @@ export default class ImageGenerator {
 
     // Pick a few random spots to draw berries/freckles/whatever
     let freckleCount = 0;
-    for (var i = 0; i < 100; i++) { // Limit # of tries to make, just in case 
+    // Limit # of tries to make, to prevent infinite loop
+    for (var i = 0; i < 100; i++) {
+
+      // If we've hit the number of freckles we're supposed to, bail out
       if (freckleCount >= tileOpt['Freckle Count']) {
         break;
       }
 
+      // Find a random spot in the image
       const fx = Math.floor(Math.random() * (image.bitmap.width)),
         fy = Math.floor(Math.random() * image.bitmap.height);
 
+      // Make sure it's not already a freckle
       if (image.getPixelColor(fx,fy) === palette[tileOpt['Bush Color']]) {
         freckleCount++;
+        // Set this pixel
         image.setPixelColor(palette[tileOpt['Freckle Color']], fx, fy);
 
+        // If it's larger than 1, also fill 1px to the top/left/right/bottom
         if (tileOpt['Freckle Size'] > 1) {
           [[fx-1, fy], [fx+1,fy], [fx, fy-1], [fx, fy+1]].forEach(coords => {
             const fxx = coords[0], fyy = coords[1];
@@ -297,10 +334,15 @@ export default class ImageGenerator {
 
   static async drawRock(image, tileOpt, palette) {
 
-    // Create a copy for us to play with, so we can mess with location
+    // We use a quirk of the image library that clamps pixel locations to the inside to make a rock-like shape, 
+    // however this forces us to put it at the bottom of the image. Make a copy of the image we can do this on, 
+    // which we will later blit onto the original image.
     const rockImg = await Jimp.read(image);
 
+    // Draw a standard circle outline based on the width of the rock
     const r = tileOpt['Rock Size'];
+
+    // Purposely place this towards the bottom of the available space in the image.
     const x = 8, y = rockImg.bitmap.height - (tileOpt['Rock Size'] - 2);
     let angle, x1, y1;
     for (var i = 0; i < 360; i++) {
@@ -311,7 +353,7 @@ export default class ImageGenerator {
       rockImg.setPixelColor(palette[0], Math.round(x + x1), Math.round(y + y1));
     }
 
-    // terribly simple color filling algorithm
+    // terribly simple color filling algorithm - look at "drawPlant" to understand this. 
     for (var imgY = 0; imgY < rockImg.bitmap.height; imgY++) {
       let hitLeft = false, hitMid = false, hitRight = false, colorCount = 0;
       for (var imgX = 0; imgX < rockImg.bitmap.width; imgX++) {
@@ -337,25 +379,31 @@ export default class ImageGenerator {
       }
     }
 
-    // okay, the image is done, but not really centered how we'd like. Blit the image onto itself?
+    // okay, the image is done, but not really centered, and in a separate image. 
+    // Center and blit it back onto our original to finish.
     await image.blit(rockImg, 0, -1 - Math.floor((image.bitmap.height / 2) - (tileOpt['Rock Size'])));
   }
 
   static async drawLava(image, tileOpt, palette) {
+    // We use Sin calculation to get a "wavy" sort of look for the lava
     const frequency = (tileOpt['Frequency'] / 100),
       offset = tileOpt['Offset'],
       waveWidth = tileOpt['Wave Width'];
+
+    // Loop over each row
     for (let y = 0; y < image.bitmap.width; y++) {
+      // Find where the first wave should start on this row
       let x = Math.sin((frequency * (Math.abs(y-offset) % image.bitmap.width)) ) * Math.floor(image.bitmap.height / 3);
 
 
+      // Increase X by the wave width repeatedly, and mark them with magic pink so we can use this to change colors later
       while (x < image.bitmap.width) {
-        // Set a dummy color to replace
+        // Set a dummy color that we will replace later (magic pink)
         image.setPixelColor(0xff00ffff, x, y);
         x += waveWidth;
       }
 
-      // Repeat iterating over the whole thing, swapping colors
+      // Loop over every x position, incrementing the palette color each time we hit a magic pink-marked pixel from above
       let currColor = 1;
       for (x = 0; x < image.bitmap.width; x++) {
         if (image.getPixelColor(x, y) === 0xff00ffff) {
@@ -367,6 +415,7 @@ export default class ImageGenerator {
   }
 
   static async drawSand(image, tileOpt, palette) {
+    // We use Sin calculation to get sand waves here. The logic is very similar to drawLava, check that for documentation.
     const frequency = (tileOpt['Frequency'] / 100),
       offset = tileOpt['Offset'],
       waveWidth = tileOpt['Wave Width'];
@@ -393,6 +442,7 @@ export default class ImageGenerator {
 
   static async drawBridge(image, tileOpt, palette) {
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      // Draw a simple bridge pattern, filling colors accordingly
       if (x % (tileOpt['Board Width']+1) === 0 || y < tileOpt['Border Width'] || y > (image.bitmap.width - tileOpt['Border Width'] - 1)) {
         image.setPixelColor(palette[tileOpt['Separator Color']], x, y);
       } else {
@@ -403,6 +453,7 @@ export default class ImageGenerator {
 
   static async drawLadder(image, tileOpt, palette) {
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      // Draw a simple ladder pattern, filling colors accordingly.
       if (y % (tileOpt['Step Width']+1) === 0 || x < tileOpt['Border Width'] || x > (image.bitmap.width - tileOpt['Border Width'] - 1)) {
         image.setPixelColor(palette[tileOpt['Separator Color']], x, y);
       } else {
@@ -412,11 +463,18 @@ export default class ImageGenerator {
   }
 
   static async drawStairs(image, tileOpt, palette) {
+    // Loop over the whole image
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      // Determine how tall the stairs are at this x coordinate
       let stepHeight = Math.floor((x-1) / tileOpt['Step Width']) * tileOpt['Step Height'];
+
+      // If this is a step,
       if (
+        // This is on a step border on the x axis (horizontal)
         x % (tileOpt['Step Width']+1) === 0 || 
+        // This is on a step border on the y axis (vertical)
         y < tileOpt['Border Width'] +  stepHeight || 
+        // This is taller than the step height at this y coordinate
         y > (image.bitmap.width - tileOpt['Border Width'] - 1)
       ) {
         image.setPixelColor(palette[tileOpt['Separator Color']], x, y);
@@ -427,13 +485,16 @@ export default class ImageGenerator {
   }
 
 
+  // Helper function, recreates a jimp image, give the base64 representation we use elsewhere.
   static async imageFromBase64(thisB64) {
     thisB64 = thisB64.substr(thisB64.indexOf(',')+1);
     return await Jimp.read(Buffer.from(thisB64, 'base64'));
   }
 
+  // Generate all images, and stitch them together into one tilemap image
   static generateFullSet(imageState) {
     return new Promise((resolve, reject) =>{
+      // Make an image as big as all of our tiles, plus one "blank" tile to start
       new Jimp(IMAGE_WIDTH * (AVAILABLE_TILE_TYPES.length+1), IMAGE_HEIGHT, 0xffffffff, (err, image) =>{
         if (err) { reject(err); }
 
@@ -442,7 +503,9 @@ export default class ImageGenerator {
 
           // Loop over each available image type
           for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++ ) {
+            // Grab the image we have in storage
             let thisImg = await this.imageFromBase64(imageState[AVAILABLE_TILE_TYPES[i]]);
+            // Slap it on the image at the right position.
             await image.blit(thisImg, (i+1)*IMAGE_WIDTH, 0);
           }
 
@@ -456,6 +519,7 @@ export default class ImageGenerator {
     });
   }
 
+  // Draw an image made up of the tiles we created, based on a built-in example map
   static generateMapPreview(imageState) {
     const width = Math.sqrt(TILE_PREVIEW_MAP.length);
     return new Promise((resolve, reject) =>{
@@ -466,7 +530,7 @@ export default class ImageGenerator {
         // Force back into async context
         (async () => {
 
-          // Build up the LUT of actual images, since we should use all of em
+          // Build up a lookup table of jimp-usable images from tile name, since we should use all of em
           let tileImages = {};
           let drawState = {};
           for (let i = 0; i < AVAILABLE_TILE_TYPES.length; i++) {
@@ -476,10 +540,14 @@ export default class ImageGenerator {
             drawState[AVAILABLE_TILE_TYPES[i]] = false;
           }
 
+          // Loop over the given map
           for (var x = 0; x < width; x++) {
             for (var y = 0; y < width; y++) {
+              // Draw the given tile at its position.
               const pos = y*width + x;
               image.blit(tileImages[TILE_PREVIEW_MAP[pos]], x * IMAGE_WIDTH, y * IMAGE_HEIGHT);
+
+              // Track which tiles have been drawn, so we can print a warning if we miss one
               drawState[TILE_PREVIEW_MAP[pos]] = true;
             }
           }
