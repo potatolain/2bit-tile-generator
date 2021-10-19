@@ -6,10 +6,12 @@ export const AVAILABLE_TILE_TYPES = [
   'brick',
   'bridge', 
   'plant', // Aka "bush"
+  'door',
   'grass', 
   'hole',
   'ladder',
-  'lava', 
+  'lava',
+  'lockdoor', 
   'rock', 
   'sand',
   'stairs',
@@ -32,7 +34,9 @@ export const TILE_BACKGROUND_COLORS = {
   bridge: 0,
   ladder: 0,
   stairs: 0,
-  tile: 3
+  tile: 3,
+  door: 3,
+  lockdoor: 3
 };
 
 export const TILE_NAMES = {
@@ -48,7 +52,9 @@ export const TILE_NAMES = {
   bridge: 'Bridge',
   ladder: 'Ladder',
   stairs: 'Stairs',
-  tile: 'Tile'
+  tile: 'Tile',
+  door: 'Door',
+  lockdoor: 'Locked Door'
 }
 
 export const TILE_PREVIEW_IDS = {
@@ -116,6 +122,16 @@ export const TILE_PREVIEW_IDS = {
     'tile', 'tile', 'tile',
     'tile', 'tile', 'tile',
     'tile', 'tile', 'tile',
+  ],
+  door: [
+    'tile', 'tile', 'tile',
+    'brick', 'door', 'brick',
+    'grass', 'grass', 'grass',
+  ],
+  lockdoor: [
+    'tile', 'tile', 'tile',
+    'brick', 'lockdoor', 'brick',
+    'grass', 'grass', 'grass',
   ]
 }
 
@@ -200,15 +216,28 @@ export const TILE_OPTIONS = {
     {name: 'Step Color', type: 'color', defaultValue: 1},
     {name: 'Separator Color', type: 'color', defaultValue: 0},
   ],
-
+  door: [
+    {name: 'Palette', type: 'palette', defaultValue: 'NES Default Yellow'},
+    {name: 'Panel Width', min: 3, max: 8, type: 'range', step: 1},
+    {name: 'Knob Width', min: 0, max: 2, type: 'range', step: 1, defaultValue: 1},
+    {name: 'Door Color', type: 'color', defaultValue: 3},
+    {name: 'Knob Color', type: 'color', defaultValue: 1}
+  ],
+  lockdoor: [
+    {name: 'Palette', type: 'palette', defaultValue: 'NES Default Yellow'},
+    {name: 'Panel Width', min: 4, max: 8, type: 'range', step: 4},
+    {name: 'Lock Width', min: 3, max: 5, type: 'range', step: 2, defaultValue: 5},
+    {name: 'Door Color', type: 'color', defaultValue: 3},
+    {name: 'Lock Color', type: 'color', defaultValue: 1}
+  ]
 
 };
   
 export const TILE_PREVIEW_MAP = [
-  'brick', 'brick', 'ladder', 'brick', 'grass', 'grass', 'grass', 'grass', 'block', 'tile', 'tile', 'tile',
-  'grass', 'grass', 'grass', 'grass', 'grass', 'plant', 'plant', 'grass', 'block', 'tile', 'stairs', 'tile',
-  'grass', 'grass', 'plant', 'plant', 'grass', 'plant', 'plant', 'grass', 'block', 'tile', 'tile', 'tile',
-  'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'block', 'block', 'block', 'block',
+  'brick', 'brick', 'ladder', 'brick', 'grass', 'grass', 'grass', 'block', 'tile', 'tile', 'tile', 'tile',
+  'grass', 'grass', 'grass', 'grass', 'grass', 'plant', 'plant', 'block', 'tile', 'tile', 'stairs', 'tile',
+  'grass', 'grass', 'plant', 'plant', 'grass', 'plant', 'plant', 'block', 'tile', 'tile', 'tile', 'tile',
+  'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'block', 'lockdoor', 'block', 'door', 'block',
   'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass',
   'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass',
   'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass',

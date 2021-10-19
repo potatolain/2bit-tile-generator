@@ -1,5 +1,9 @@
 # Change History
 
+## 1.2.2
+
+* Add door and locked door types
+
 ## 1.2.1
 
 * Allow downloading NES data formats, for use directly in NES games. (Or editing in NESST, etc)

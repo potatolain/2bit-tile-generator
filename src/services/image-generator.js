@@ -72,6 +72,12 @@ export default class ImageGenerator {
           case 'stairs':
             await ImageGenerator.drawStairs(image, tileOpt, palette);
             break;
+          case 'door':
+            await ImageGenerator.drawDoor(image, tileOpt, palette);
+            break;
+          case 'lockdoor':
+            await ImageGenerator.drawLockedDoor(image, tileOpt, palette);
+            break;
           default: 
             console.warn('Unimplemented tile type given!', tileType, 'blank image ahoy');
         }
@@ -461,6 +467,51 @@ export default class ImageGenerator {
       }
     })
   }
+
+  static async drawBaseDoor(image, tileOpt, palette) {
+    image.scan(0, 0, image.bitmap.width, 1, (x, y) => image.setPixelColor(palette[0], x, y));
+    image.scan(0, 0, 1, image.bitmap.height, (x, y) => image.setPixelColor(palette[0], x, y));
+    image.scan(image.bitmap.width - 1, 0, image.bitmap.width, image.bitmap.height, (x, y) => image.setPixelColor(palette[0], x, y));
+
+    image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+      if (x % tileOpt['Panel Width'] === 0) {
+        image.setPixelColor(palette[0], x, y);
+      } else if (image.getPixelColor(x, y) !== palette[0]) {
+        // If we didn't set it above, set it here, to the correct bg color.
+        image.setPixelColor(palette[tileOpt['Door Color']], x, y);
+      }
+    });
+  }
+
+  static async drawDoor(image, tileOpt, palette) {
+    await this.drawBaseDoor(image, tileOpt, palette);
+
+    const knobY = Math.floor((image.bitmap.height / 2) - tileOpt['Knob Width']) + 1;
+    const knobX = image.bitmap.width - 3 - Math.floor(tileOpt['Knob Width'] / 2)
+
+    image.scan(knobX, knobY, tileOpt['Knob Width'], tileOpt['Knob Width'], (x, y) => image.setPixelColor(palette[tileOpt['Knob Color']], x, y));
+  }
+
+  static async drawLockedDoor(image, tileOpt, palette) {
+    await this.drawBaseDoor(image, tileOpt, palette);
+
+    const lockY = Math.floor((image.bitmap.height / 2) - 4 + 1);
+    const lockX = Math.floor(image.bitmap.width / 2) - Math.floor(tileOpt['Lock Width'] / 2);
+
+    image.scan(lockX + Math.floor(tileOpt['Lock Width'] / 2), lockY, 1, tileOpt['Lock Width'] === 5 ? 9 : 8, (x, y) => image.setPixelColor(palette[tileOpt['Lock Color']], x, y));
+    
+    image.scan(lockX, lockY, Math.floor(tileOpt['Lock Width'] / 2), 8, (x, y) => {
+      if (y < 10 || (tileOpt['Lock Width'] === 5 && (x === 7)) ) {
+        image.setPixelColor(palette[tileOpt['Lock Color']], x, y)
+      }
+    });
+    image.scan(lockX + 1 + Math.floor(tileOpt['Lock Width'] / 2), lockY, Math.floor(tileOpt['Lock Width'] / 2), 8, (x, y) => {
+      if (y < 10 || (tileOpt['Lock Width'] === 5 && (x === 9)) ) {
+        image.setPixelColor(palette[tileOpt['Lock Color']], x, y)
+      }
+    });
+  }
+  
 
   static async drawStairs(image, tileOpt, palette) {
     // Loop over the whole image
