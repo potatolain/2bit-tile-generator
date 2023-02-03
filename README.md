@@ -4,8 +4,9 @@ This is a quick-and-dirty react app put together to generate some simple tiles f
 didn't follow a lot of best practices here, and didn't do much of any code separation. (At least not yet). The main
 goal was to get something working, not to make something for others to extend. (Though you're of course welcome to!)
 
-It directly targets the Nintendo gameboy, but can be easily adapted to work with the NES, or likely many
-other consoles. It outputs png files, though it could be adapted to provide binary output for use with retro systems.
+It directly targets the Nintendo gameboy and NES, but may be able to be used with other consoles as well.
+
+It outputs png files, as well as NES-compatible chr and pal files.
 
 Check it out live at: https://cppchriscpp.github.io/2bit-tile-generator
 
