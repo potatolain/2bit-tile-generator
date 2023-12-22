@@ -1,6 +1,6 @@
-import SlButton from '@shoelace-style/react/dist/button';
-import SlDialog from '@shoelace-style/react/dist/dialog';
-import SlTooltip from '@shoelace-style/react/dist/tooltip';
+import SlButton from '@shoelace-style/shoelace/dist/react/button';
+import SlDialog from '@shoelace-style/shoelace/dist/react/dialog';
+import SlTooltip from '@shoelace-style/shoelace/dist/react/tooltip';
 import React from 'react';
 
 import ImageGenerator from '../services/image-generator';

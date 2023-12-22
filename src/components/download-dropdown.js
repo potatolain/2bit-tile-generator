@@ -1,7 +1,7 @@
-import SlDropdown from '@shoelace-style/react/dist/dropdown';
-import SlMenuItem from '@shoelace-style/react/dist/menu-item';
-import SlButton from '@shoelace-style/react/dist/button';
-import SlMenu from '@shoelace-style/react/dist/menu';
+import SlDropdown from '@shoelace-style/shoelace/dist/react/dropdown';
+import SlMenuItem from '@shoelace-style/shoelace/dist/react/menu-item';
+import SlButton from '@shoelace-style/shoelace/dist/react/button';
+import SlMenu from '@shoelace-style/shoelace/dist/react/menu';
 import React from 'react';
 
 import ImageGenerator from '../services/image-generator';

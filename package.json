@@ -1,13 +1,14 @@
 {
   "name": "2bit-tile-generator",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Generates 2-bit colored tiles for retro and retro-themed games",
   "homepage": "https://2bit-tile-generator.nes.science/",
   "private": false,
   "dependencies": {
-    "@shoelace-style/react": "^2.0.0-beta.47",
-    "@shoelace-style/shoelace": "^2.0.0-beta.47",
-    "@testing-library/jest-dom": "^5.14.1",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.20.7",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
+    "@shoelace-style/shoelace": "2.12",
+    "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "cross-env": "^7.0.3",
@@ -33,14 +34,14 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
+      ">0.1%",
       "not dead",
       "not op_mini all"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      ">0.1%",
+      "not dead",
+      "not op_mini all"
     ]
   }
 }

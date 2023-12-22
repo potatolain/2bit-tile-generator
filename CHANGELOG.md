@@ -1,5 +1,9 @@
 # Change History
 
+## 1.2.3 
+
+* Moving domain/account. No functional changes.
+
 ## 1.2.2
 
 * Add door and locked door types

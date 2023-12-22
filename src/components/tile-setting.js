@@ -1,11 +1,11 @@
 import React from 'react';
 import './tile-setting.css';
 
-import SlRadio from '@shoelace-style/react/dist/radio';
-import SlRadioGroup from '@shoelace-style/react/dist/radio-group';
-import SlRange from '@shoelace-style/react/dist/range';
-import SlSelect from '@shoelace-style/react/dist/select';
-import SlMenuItem from '@shoelace-style/react/dist/menu-item';
+import SlRadio from '@shoelace-style/shoelace/dist/react/radio';
+import SlRadioGroup from '@shoelace-style/shoelace/dist/react/radio-group';
+import SlRange from '@shoelace-style/shoelace/dist/react/range';
+import SlSelect from '@shoelace-style/shoelace/dist/react/select';
+import SlOption from '@shoelace-style/shoelace/dist/react/option';
 
 import { availablePalettes, getPalette } from '../constants/palette-constants';
 
@@ -87,9 +87,9 @@ export default class TileSetting extends React.Component {
         return <div className="tile-option" key={'palette-' + setting.type + setting.name}>
           <SlSelect 
             label="Palette Color" 
-            value={this.state.tileProps[this.tileTypeId][setting.name]}
-            onSlChange={e => this.updateTileState(this.tileTypeId, setting.name, e.target.value)}>
-              {availablePalettes.map(a => <SlMenuItem key={a} value={a}>{a} <PalettePreview palette={getPalette(a)}></PalettePreview></SlMenuItem>)}
+            value={this.state.tileProps[this.tileTypeId][setting.name].replace(/ /g, '_')}
+            onSlChange={e => this.updateTileState(this.tileTypeId, setting.name, e.target.value.replace(/_/g, ' '))}>
+              {availablePalettes.map(a => <SlOption key={a} value={a.replace(/ /g, '_')}>{a} <PalettePreview palette={getPalette(a)}></PalettePreview></SlOption>)}
           </SlSelect>
         </div>
       default:

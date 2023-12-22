@@ -1,11 +1,11 @@
 import React from 'react';
 
 // Shoelace components
-import '@shoelace-style/shoelace/dist/themes/base.css';
-import SlButton from '@shoelace-style/react/dist/button';
-import SlSelect from '@shoelace-style/react/dist/select';
-import SlMenuItem from '@shoelace-style/react/dist/menu-item';
-import SlTooltip from '@shoelace-style/react/dist/tooltip';
+import '@shoelace-style/shoelace/dist/themes/light.css';
+import SlButton from '@shoelace-style/shoelace/dist/react/button';
+import SlSelect from '@shoelace-style/shoelace/dist/react/select';
+import SlOption from '@shoelace-style/shoelace/dist/react/option';
+import SlTooltip from '@shoelace-style/shoelace/dist/react/tooltip';
 
 // Services
 import ImageGenerator from './services/image-generator';
@@ -19,6 +19,9 @@ import DownloadDropdown from './components/download-dropdown';
 // Constants
 import { TILE_NAMES, TILE_OPTIONS, AVAILABLE_TILE_TYPES, DEFAULT_TILE_TYPE } from './constants/tile-constants';
 import { getPalette } from './constants/palette-constants';
+
+import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path';
+setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/')
 
 import './App.css';
 // Huge app component that could probably be broken down well if I got smart with a Store for state
@@ -194,7 +197,7 @@ class App extends React.Component {
               <h3>Tile Configuration</h3>
               <div className="tile-option">
                 <SlSelect label="Tile Type" value={this.state.tileType} onSlChange={e => this.updateTileType(e)} className="tile-type-select">
-                  {AVAILABLE_TILE_TYPES.map(a => <SlMenuItem key={a} value={a}>{TILE_NAMES[a]} <img alt="" slot="suffix" src={this.state.builtTileImages[a]}></img> </SlMenuItem>)}
+                  {AVAILABLE_TILE_TYPES.map(a => <SlOption key={a} value={a}>{TILE_NAMES[a]} <img alt="" slot="suffix" src={this.state.builtTileImages[a]}></img> </SlOption>)}
                 </SlSelect>
               </div>
 
