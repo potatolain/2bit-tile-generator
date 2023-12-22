@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/2bit-tile-generator/static/css/main.7af79be8.chunk.css",
-    "main.js": "/2bit-tile-generator/static/js/main.5da08084.chunk.js",
-    "main.js.map": "/2bit-tile-generator/static/js/main.5da08084.chunk.js.map",
+    "main.js": "/2bit-tile-generator/static/js/main.5c0d5246.chunk.js",
+    "main.js.map": "/2bit-tile-generator/static/js/main.5c0d5246.chunk.js.map",
     "runtime-main.js": "/2bit-tile-generator/static/js/runtime-main.6cec5f96.js",
     "runtime-main.js.map": "/2bit-tile-generator/static/js/runtime-main.6cec5f96.js.map",
     "static/css/2.aacb7781.chunk.css": "/2bit-tile-generator/static/css/2.aacb7781.chunk.css",
@@ -20,6 +20,6 @@
     "static/css/2.aacb7781.chunk.css",
     "static/js/2.06159817.chunk.js",
     "static/css/main.7af79be8.chunk.css",
-    "static/js/main.5da08084.chunk.js"
+    "static/js/main.5c0d5246.chunk.js"
   ]
 }
