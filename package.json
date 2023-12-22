@@ -21,7 +21,7 @@
   "scripts": {
     "start": "cross-env PUBLIC_URL=/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "cross-env PUBLIC_URL=/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION react-scripts build && cp ./build/index.html ./build/404.html",
-    "build-gh": "cross-env PUBLIC_URL=/2bit-tile-generator/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION react-scripts build && cp ./build/index.html ./build/404.html",
+    "build-gh": "cross-env PUBLIC_URL=/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION react-scripts build && cp ./build/index.html ./build/404.html",
     "get-version": "node -e \"console.info(require('./package.json').version);\"",
     "test": "echo \"No tests, this is a toy\""
   },
