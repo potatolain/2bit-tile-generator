@@ -8,7 +8,7 @@ It directly targets the Nintendo gameboy and NES, but may be able to be used wit
 
 It outputs png files, as well as NES-compatible chr and pal files.
 
-Check it out live at: https://cppchriscpp.github.io/2bit-tile-generator
+Check it out live at: https://2bit-tile-generator.nes.science/
 
 ## Run it locally
 

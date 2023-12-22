@@ -2,7 +2,7 @@
   "name": "2bit-tile-generator",
   "version": "1.2.2",
   "description": "Generates 2-bit colored tiles for retro and retro-themed games",
-  "homepage": "https://cppchriscpp.github.io/2bit-tile-generator",
+  "homepage": "https://2bit-tile-generator.nes.science/",
   "private": false,
   "dependencies": {
     "@shoelace-style/react": "^2.0.0-beta.47",
@@ -19,7 +19,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "cross-env PUBLIC_URL=/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION react-scripts start",
+    "start": "cross-env PUBLIC_URL=/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "cross-env PUBLIC_URL=/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION react-scripts build && cp ./build/index.html ./build/404.html",
     "build-gh": "cross-env PUBLIC_URL=/2bit-tile-generator/ REACT_APP_VERSION=$NPM_PACKAGE_VERSION react-scripts build && cp ./build/index.html ./build/404.html",
     "get-version": "node -e \"console.info(require('./package.json').version);\"",
